@@ -1,0 +1,24 @@
+# Application dependencies
+
+require:
+    - play
+    - play -> crud
+    - play -> secure
+    - org.ow2.petals -> petals-admin-jmx 1.2.0-SNAPSHOT
+
+repositories:
+
+    - ow2.snapshot:
+        type: iBiblio
+        root: "http://repository.ow2.org/nexus/content/repositories/snapshots/"
+        contains:
+            - org.ow2.petals -> petals-admin-jmx 1.2.0-SNAPSHOT
+            - org.ow2.petals->petals-jmx-api-api 1.0.0-SNAPSHOT
+            - org.ow2.petals->petals-admin-api 1.2.0-SNAPSHOT
+            - org.ow2.petals->petals-jmx-api-impl 1.0.0-SNAPSHOT
+    
+    - petalslink.release:
+        type: iBiblio
+        root: "http://maven.petalslink.com/public"
+        contains:
+            - com.ebmwebsourcing.* -> *

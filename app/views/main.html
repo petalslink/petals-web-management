@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>#{get 'title' /}</title>
+        <meta charset="utf-8">
+		<link rel="stylesheet" href="@{'/public/assets/css/bootstrap.css'}">
+		<style type="text/css">
+		body {
+			padding-top: 60px;
+			padding-bottom: 40px;
+		}
+		
+		.sidebar-nav {
+			padding: 9px 0;
+		}
+		</style>
+		<link href="@{'/public/assets/css/bootstrap-responsive.css'}"
+			rel="stylesheet">
+		
+		<link rel="stylesheet" type="text/css" href="@{'/public/assets/gritter/css/jquery.gritter.css'}" />
+
+        #{get 'moreStyles' /}
+        <link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
+        <script src="@{'/public/javascripts/jquery-1.5.2.min.js'}" type="text/javascript" charset="utf-8"></script>
+        <script src="@{'/public/javascripts/application.js'}" type="text/javascript" charset="utf-8"></script>
+        #{get 'moreScripts' /}
+    </head>
+    <body>
+
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<a class="brand" href="@{Application.index()}">OW2-Petals</a>
+				<div class="nav-collapse" id="main-menu">
+					<ul class="nav" id="main-menu-left">
+						<li class="dropdown"><a class="dropdown-toggle"
+							data-toggle="dropdown" href="#">Menu A <b class="caret"></b></a>
+							<ul class="dropdown-menu" id="swatch-menu">
+                <li><a href="#">Item A1</a></li>
+			          <li><a href="#">Item A2</a></li>
+							</ul>
+						</li>
+						<li class="dropdown"><a class="dropdown-toggle"
+							data-toggle="dropdown" href="#">Menu B <b class="caret"></b></a>
+							<ul class="dropdown-menu" id="swatch-menu">
+				        <li><a href="#">Item B1</a></li>
+				        <li><a href="#">Item B2</a></li>
+				        <li><a href="#">Item B3</a></li>
+							</ul>
+						</li>
+					</ul>
+					<ul class="nav pull-right" id="main-menu-right">
+						<li class="dropdown" id="preview-menu">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">Session <b class="caret"></b></a>
+							#{if session.get("username")}
+							<ul class="dropdown-menu">
+								<li><a href="@{Secure.logout}">Logout</a></li>
+							</ul>
+							#{/if}
+							#{else}
+							<ul class="dropdown-menu">
+								<li><a href="@{Secure.login}">Login</a></li>
+							</ul>
+							#{/else}
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+  
+		#{if flash.success}
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert">×</button>
+			<strong>${flash.success}</strong>
+		</div>
+		#{/if}
+		#{if flash.error}
+		<div class="alert alert-error">
+			<button type="button" class="close" data-dismiss="alert">×</button>
+			<strong>${flash.error}</strong>
+		</div>
+		#{/if}
+
+     	#{doLayout /}
+  </div>
+  
+  	<script src="@{'/public/assets/js/jquery.js'}"></script>
+	<script src="@{'/public/assets/js/bootstrap-transition.js'}"></script>
+	<script src="@{'/public/assets/js/bootstrap-alert.js'}"></script>
+	<script src="@{'/public/assets/js/bootstrap-modal.js'}"></script>
+	<script src="@{'/public/assets/js/bootstrap-dropdown.js'}"></script>
+	<script src="@{'/public/assets/js/bootstrap-scrollspy.js'}"></script>
+	<script src="@{'/public/assets/js/bootstrap-tab.js'}"></script>
+	<script src="@{'/public/assets/js/bootstrap-tooltip.js'}"></script>
+	<script src="@{'/public/assets/js/bootstrap-popover.js'}"></script>
+	<script src="@{'/public/assets/js/bootstrap-button.js'}"></script>
+	<script src="@{'/public/assets/js/bootstrap-collapse.js'}"></script>
+	<script src="@{'/public/assets/js/bootstrap-carousel.js'}"></script>
+	<script src="@{'/public/assets/js/bootstrap-typeahead.js'}"></script>
+	
+	<script type="text/javascript" src="@{'/public/assets/gritter/js/jquery.gritter.js'}"></script>
+	 <script>
+	   $.extend($.gritter.options, {
+	     position: 'bottom-right'
+	   });
+	</script>
+	
+    #{get 'lastScripts' /}
+    
+    <!-- Websocket -->
+    <script>
+    if (window["WebSocket"]) {
+		var conn = new WebSocket('@@{BackgroundTaskWebSocket.pushNewMessage()}');
+
+		conn.onmessage = function(evt) {			
+			var d = $.parseJSON(evt.data);
+			var unique_id = $.gritter.add({
+			    // (string | mandatory) the heading of the notification
+			    title: d.title,
+			    // (string | mandatory) the text inside the notification
+			    text: d.content,
+			    // (string | optional) the image to display on the left
+			    //image: 'http://s3.amazonaws.com/twitter_production/profile_images/132499022/myface_bigger.jpg',
+			    // (bool | optional) if you want it to fade out on its own or just sit there
+			    sticky: false,
+			    // (int | optional) the time you want it to be alive for before fading out
+			    time: '1000',
+			    // (string | optional) the class name you want to apply to that specific message
+			    class_name: 'my-sticky-class'
+			  });
+		};
+
+		conn.onclose = function(evt) {
+			var unique_id = $.gritter.add({
+			    // (string | mandatory) the heading of the notification
+			    title: 'Websocket status',
+			    // (string | mandatory) the text inside the notification
+			    text: 'Closed!',
+			    // (string | optional) the image to display on the left
+			    //image: 'http://s3.amazonaws.com/twitter_production/profile_images/132499022/myface_bigger.jpg',
+			    // (bool | optional) if you want it to fade out on its own or just sit there
+			    sticky: false,
+			    // (int | optional) the time you want it to be alive for before fading out
+			    time: '1000',
+			    // (string | optional) the class name you want to apply to that specific message
+			    class_name: 'my-sticky-class'
+			  });
+		};
+	} else {
+		var unique_id = $.gritter.add({
+		    // (string | mandatory) the heading of the notification
+		    title: 'Websocket status',
+		    // (string | mandatory) the text inside the notification
+		    text: 'Browser does not support WebSockets!',
+		    // (string | optional) the image to display on the left
+		    //image: 'http://s3.amazonaws.com/twitter_production/profile_images/132499022/myface_bigger.jpg',
+		    // (bool | optional) if you want it to fade out on its own or just sit there
+		    sticky: false,
+		    // (int | optional) the time you want it to be alive for before fading out
+		    time: '1000',
+		    // (string | optional) the class name you want to apply to that specific message
+		    class_name: 'my-sticky-class'
+		  });
+	}
+    </script>
+
+  </body>
+</html>
