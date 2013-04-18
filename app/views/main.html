@@ -15,16 +15,14 @@
 			padding: 9px 0;
 		}
 		</style>
-		<link href="@{'/public/assets/css/bootstrap-responsive.css'}"
-			rel="stylesheet">
-		
+		<link href="@{'/public/assets/css/bootstrap-responsive.css'}" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="@{'/public/assets/gritter/css/jquery.gritter.css'}" />
-
+		
         #{get 'moreStyles' /}
+        
         <link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
-        <script src="@{'/public/javascripts/jquery-1.5.2.min.js'}" type="text/javascript" charset="utf-8"></script>
-        <script src="@{'/public/javascripts/application.js'}" type="text/javascript" charset="utf-8"></script>
         #{get 'moreScripts' /}
+        
     </head>
     <body>
 
@@ -37,38 +35,42 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</a>
-				<a class="brand" href="@{Application.index()}">OW2-Petals</a>
+				<a class="brand" href="@{Application.index()}">Petals.ESB</a>
 				<div class="nav-collapse" id="main-menu">
 					<ul class="nav" id="main-menu-left">
-						<li class="dropdown"><a class="dropdown-toggle"
-							data-toggle="dropdown" href="#">Menu A <b class="caret"></b></a>
-							<ul class="dropdown-menu" id="swatch-menu">
-                <li><a href="#">Item A1</a></li>
-			          <li><a href="#">Item A2</a></li>
+						<!-- <li><a href="">Groups</a></li> -->
+						
+						<li class="dropdown" id="preview-menu">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">Artifacts <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="@{ArtifactsController.index()}">List</a></li>
+								<li><a href="@{ArtifactsController.repository()}">Repository</a></li>
+								<li><a href="@{ArtifactsController.deploy}">Deploy</a></li>
 							</ul>
 						</li>
-						<li class="dropdown"><a class="dropdown-toggle"
-							data-toggle="dropdown" href="#">Menu B <b class="caret"></b></a>
-							<ul class="dropdown-menu" id="swatch-menu">
-				        <li><a href="#">Item B1</a></li>
-				        <li><a href="#">Item B2</a></li>
-				        <li><a href="#">Item B3</a></li>
+						<li class="dropdown" id="preview-menu">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">Endpoints <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="@{EndpointsController.index()}">List</a></li>
 							</ul>
 						</li>
 					</ul>
+
 					<ul class="nav pull-right" id="main-menu-right">
 						<li class="dropdown" id="preview-menu">
-							<a class="dropdown-toggle" data-toggle="dropdown" href="#">Session <b class="caret"></b></a>
-							#{if session.get("username")}
-							<ul class="dropdown-menu">
-								<li><a href="@{Secure.logout}">Logout</a></li>
-							</ul>
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+							<img src="" width="20px" height="20px" />
+							#{if currentnode}
+							Connected to ${currentnode.host}:${currentnode.port}
 							#{/if}
 							#{else}
-							<ul class="dropdown-menu">
-								<li><a href="@{Secure.login}">Login</a></li>
-							</ul>
+							Not connected
 							#{/else}
+							<b class="caret"></b></a>
+							
+							<ul class="dropdown-menu">
+								<li><a href="@{NodesController.index()}">Select Node</a></li>
+							</ul>
 						</li>
 					</ul>
 				</div>
@@ -77,23 +79,66 @@
 	</div>
 
 	<div class="container">
-  
+	
+	<div class="row">
+        <div class="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+              <li class="nav-header">Context</li>
+              <li><a href="@{Application.index()}"><i class="icon-fire"></i> Activity</a></li>
+              #{if currentnode}
+              <li class="divider"></li>
+              <li class="nav-header">Node Resources</li>
+              <li><a href="@{NodesController.node(currentnode.id)}"><i class="icon-info-sign"></i> Info</a></li>
+              <li><a href="@{ArtifactsController.index()}"><i class="icon-tag"></i> Artifacts <span class="badge badge-important">0</span></a></li>
+              <li><a href="@{EndpointsController.index()}"><i class="icon-tags"></i> Endpoints <span class="badge badge-important">0</span></a></li>
+              <li><a href="#"><i class="icon-globe"></i> Topology</a></li>
+			  <li class="divider"></li>
+              <li><a href="@{NodesController.disconnect()}"><i class="icon-off"></i> Disconnect</a></li>
+			  #{/if}
+			  #{else}
+			  <li class="divider"></li>
+              <li><a href="@{NodesController.index()}"><i class="icon-off"></i> Connect</a></li>
+			  #{/else}
+            </ul>
+          </div><!--/.well -->
+        </div><!--/span-->
+        <div class="span9">    
+	
 		#{if flash.success}
 		<div class="alert alert-success">
 			<button type="button" class="close" data-dismiss="alert">×</button>
 			<strong>${flash.success}</strong>
 		</div>
 		#{/if}
+		
 		#{if flash.error}
 		<div class="alert alert-error">
 			<button type="button" class="close" data-dismiss="alert">×</button>
 			<strong>${flash.error}</strong>
 		</div>
 		#{/if}
-
-     	#{doLayout /}
-  </div>
-  
+		
+		#{ifErrors}
+	    <div class="alert alert-error">
+			<button type="button" class="close" data-dismiss="alert">×</button>
+	       	<p><strong>Some values are invalid, please fix them...</strong></p>
+	       	<ul>
+	       		#{errors}
+	    		<li>${error}</li>
+	  			#{/errors}
+	  		</ul>
+	     </div>
+		#{/ifErrors}
+	
+		#{doLayout /}
+    
+    #{if playuser}
+  		</div>
+  	</div>
+  	#{/if}
+  	</div>
+  	
   	<script src="@{'/public/assets/js/jquery.js'}"></script>
 	<script src="@{'/public/assets/js/bootstrap-transition.js'}"></script>
 	<script src="@{'/public/assets/js/bootstrap-alert.js'}"></script>
@@ -107,9 +152,8 @@
 	<script src="@{'/public/assets/js/bootstrap-collapse.js'}"></script>
 	<script src="@{'/public/assets/js/bootstrap-carousel.js'}"></script>
 	<script src="@{'/public/assets/js/bootstrap-typeahead.js'}"></script>
-	
 	<script type="text/javascript" src="@{'/public/assets/gritter/js/jquery.gritter.js'}"></script>
-	 <script>
+	<script>
 	   $.extend($.gritter.options, {
 	     position: 'bottom-right'
 	   });
@@ -117,10 +161,10 @@
 	
     #{get 'lastScripts' /}
     
-    <!-- Websocket -->
+        <!-- Websocket -->
     <script>
     if (window["WebSocket"]) {
-		var conn = new WebSocket('@@{BackgroundTaskWebSocket.pushNewMessage()}');
+		var conn = new WebSocket('@@{WebSocket.pushNewMessage()}');
 
 		conn.onmessage = function(evt) {			
 			var d = $.parseJSON(evt.data);
@@ -134,7 +178,7 @@
 			    // (bool | optional) if you want it to fade out on its own or just sit there
 			    sticky: false,
 			    // (int | optional) the time you want it to be alive for before fading out
-			    time: '1000',
+			    time: '2000',
 			    // (string | optional) the class name you want to apply to that specific message
 			    class_name: 'my-sticky-class'
 			  });
@@ -173,6 +217,6 @@
 		  });
 	}
     </script>
-
+    
   </body>
 </html>

@@ -1,0 +1,111 @@
+#{extends 'main.html' /} #{set title:'Node details' /}
+
+<ul class="breadcrumb">
+  <li><a href="@{Application.index()}">Home</a> <span class="divider">/</span></li>
+  <li><a href="@{NodesController.index()}">Nodes</a> <span class="divider">/</span></li>
+  <li class="active">${node.id}</li>
+</ul>
+
+#{if currentnode.id == node.id}
+<div class="alert alert-info">
+	<button type="button" class="close" data-dismiss="alert">&times;</button>
+	<h4>Info!</h4>
+	You are currently connected to this node
+</div>
+#{/if}
+
+<div class="well">
+	<a href="@{NodesController.stop(node.id)}" class="btn">Stop</a>&nbsp;
+	<a href="@{NodesController.shutdown(node.id)}" class="btn">Shutdown</a>&nbsp;
+</div>
+
+<div id="info">
+	#{if info}
+	<h3>Server Information</h3>
+	<pre>${info}</pre>
+	#{/if}
+</div>
+
+<div class="tabbable"> <!-- Only required for left/right tabs -->
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#tab1" data-toggle="tab">Properties</a></li>
+    <li><a href="#tab2" data-toggle="tab">Loggers</a></li>
+    <li><a href="#tab3" data-toggle="tab">Topology</a></li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane active" id="tab1">
+	    <div id="properties">
+		#{if properties}
+		<table class="table table-striped">
+	        <thead>
+	          <tr>
+	            <th>Name</th>
+	            <th>Value</th>
+	            <th>Actions</th>
+	          </tr>
+	        </thead>
+	        <tbody>
+	        #{list properties, as : 'property'}
+	          <tr>
+	          <td align="left"><b>${property.name}</b></td>
+	            <td>${property.value}</td>
+	            <td>
+					<a href="#" class="btn btn-danger">Edit</a>
+	            </td>
+	          </tr>
+	        #{/list}
+	        </tbody>
+		</table>
+		#{/if}
+		#{else}
+    	Not available
+    	#{/else}
+		</div>
+    </div>
+    <div class="tab-pane" id="tab2">
+		<div id="loggers">
+			#{if loggers}
+			<table class="table table-striped">
+		        <thead>
+		          <tr>
+		            <th>Name</th>
+		            <th>Value</th>
+		            <th>Actions</th>
+		          </tr>
+		        </thead>
+		        <tbody>
+		        #{list loggers, as : 'logger'}
+		          <tr>
+		          <td align="left"><b>${logger.name}</b></td>
+		            <td>${logger.level}</td>
+		            <td>
+						<a href="#" class="btn btn-danger">Change Level</a>
+		            </td>
+		          </tr>
+		        #{/list}
+		        </tbody>
+		      </table>
+			#{/if}
+			#{else}
+    		Not available
+    		#{/else}
+		</div>    
+    </div>
+    <div class="tab-pane" id="tab3">
+    #{if topology}
+    ...
+    #{/if}
+    #{else}
+    Not available
+    #{/else}
+    </div>
+  </div>
+</div>
+
+#{else}
+<div class="alert alert-error">
+	<button type="button" class="close" data-dismiss="alert">&times;</button>
+	<h4>Info!</h4>
+	You are NOT currently connected to this node
+</div>
+#{/else}

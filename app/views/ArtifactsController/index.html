@@ -1,0 +1,116 @@
+#{extends 'main.html' /} #{set title:'Artifacts' /}
+
+<ul class="breadcrumb">
+  <li><a href="@{Application.index()}">Home</a> <span class="divider">/</span></li>
+  <li class="active">Artifacts</li>
+</ul>
+
+<div class="well">
+<a href="@{ArtifactsController.deploy}" class="btn">Deploy</a>
+</div>
+
+<div class="tabbable"> <!-- Only required for left/right tabs -->
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#components" data-toggle="tab">Components</a></li>
+    <li><a href="#sas" data-toggle="tab">Service Assemblies</a></li>
+    <li><a href="#sls" data-toggle="tab">Shared Libraries</a></li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane active" id="components">
+    	#{if components}
+		<table class="table table-striped">
+	        <thead>
+	          <tr>
+	            <th>Name</th>
+	            <th>State</th>
+	            <th>Type</th>
+	            <th>Actions</th>
+	          </tr>
+	        </thead>
+	        <tbody>
+	        #{list components, as : 'component'}
+	          <tr>
+	          	<td align="left"><a href="@{ArtifactsController.component(component.name, component.type)}">${component.name}</a></td>
+	            <td><span class="label">${component.state.toString().toLowerCase().capFirst()}</span></td>
+	            <td>${component.type}</td>
+	            <td>
+					<a href="@{ArtifactsController.component(component.name, component.type)}" class="btn">Details</a>
+					&nbsp;
+					<a href="@{ArtifactsController.doStopAndUndeployArtifact(component.name, component.type)}" class="btn btn-danger">Stop & Undeploy</a>
+	            </td>
+	          </tr>
+	        #{/list}
+	        </tbody>
+	    </table>
+	    #{/if}
+	    #{else}
+		<div class="alert alert-info">
+  		No components
+		</div>
+		#{/else}
+    </div>
+    <div class="tab-pane" id="sas">
+    	#{if sas}
+		<table class="table table-striped">
+	        <thead>
+	          <tr>
+	            <th>Name</th>
+	            <th>State</th>
+	            <th>Actions</th>
+	          </tr>
+	        </thead>
+	        <tbody>
+	        #{list sas, as : 'sa'}
+	          <tr>
+	          	<td align="left"><a href="@{ArtifactsController.sa(sa.name)}">${sa.name}</a></td>
+	            <td><span class="label">${sa.state.toString().toLowerCase().capFirst()}</span></td>
+	            <td>
+					<a href="@{ArtifactsController.sa(sa.name)}" class="btn">Details</a>
+					&nbsp;
+					<a href="@{ArtifactsController.doStopAndUndeployArtifact(sa.name, 'SA')}" class="btn btn-danger">Stop & Undeploy</a>
+	            </td>
+	          </tr>
+	        #{/list}
+	        </tbody>
+	    </table>
+	    #{/if}
+	    #{else}
+		<div class="alert alert-info">
+  		No service assemblies
+		</div>
+		#{/else}
+    </div>
+    <div class="tab-pane" id="sls">
+    	#{if sls}
+		<table class="table table-striped">
+	        <thead>
+	          <tr>
+	            <th>Name</th>
+	            <th>Version</th>
+	            <th>Actions</th>
+	          </tr>
+	        </thead>
+	        <tbody>
+	        #{list sls, as : 'sl'}
+	          <tr>
+	          	<td align="left"><a href="@{ArtifactsController.sl(sl.name)}">${sl.name}</a></td>
+	            <td>${sl.version}</td>
+	            <td>
+					<a href="@{ArtifactsController.sl(sl.name)}" class="btn">Details</a>
+					&nbsp;
+					<a href="@{ArtifactsController.doStopAndUndeployArtifact(sl.name, 'SL')}" class="btn btn-danger">Stop & Undeploy</a>
+	            </td>
+	          </tr>
+	        #{/list}
+	        </tbody>
+	    </table>
+	    #{/if}
+	    #{else}
+		<div class="alert alert-info">
+  		No shared libraries
+		</div>
+		#{/else}
+    </div>
+    </div>
+  </div>
+</div>

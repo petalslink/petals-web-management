@@ -1,0 +1,21 @@
+#{extends 'main.html' /} #{set title:'Shared Library' /}
+
+<ul class="breadcrumb">
+  <li><a href="@{Application.index()}">Home</a> <span class="divider">/</span></li>
+  <li><a href="@{ArtifactsController.index()}">Artifacts</a> <span class="divider">/</span></li>
+  <li><a href="@{ArtifactsController.index()}#sls">Shared Libraries</a> <span class="divider">/</span></li>
+  <li class="active">${sl?.name}</li>
+</ul>
+
+<div class="well">
+	<div class="btn-group">
+	  <a class="btn dropdown-toggle btn-danger" data-toggle="dropdown" href="#">
+	    Manage
+	    <span class="caret"></span>
+	  </a>
+	  <ul class="dropdown-menu">
+	    <li><a href="#">Stop</a></li>
+	    <li><a href="#">Undeploy</a></li>
+	  </ul>
+	</div>
+</div>

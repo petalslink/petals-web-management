@@ -1,0 +1,71 @@
+#{extends 'main.html' /} #{set title:'Nodes' /}
+
+<ul class="breadcrumb">
+  <li><a href="@{Application.index()}">Home</a> <span class="divider">/</span></li>
+  <li class="active">Nodes</li>
+</ul>
+
+<div class="well">
+	<a class="btn" href="#add">Add</a>&nbsp;
+	<a class="btn" href="@{NodesController.syncTopology()}">Sync With Topology</a>
+</div>
+
+#{if nodes}
+	<table class="table table-striped">
+        <thead>
+          <tr>
+          	<th>#</th>
+            <th>host:port</th>
+            <th>State</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        #{list nodes, as : 'node'}
+          <tr>
+          <td align="left"><a href="@{NodesController.node(node.id)}">${node.id}</a></td>
+            <td><a href="@{NodesController.node(node.id)}">${node.host}:${node.port}</a></td>
+            <td>-</td>
+            <td>
+            	#{if currentnode && currentnode.id == node.id}
+				<a href="@{NodesController.disconnect()}" class="btn btn-danger">Disconnect</a>
+            	#{/if}
+            	#{else}
+            	<a href="@{NodesController.connect(node.id)}" class="btn">Connect</a>
+				#{/else}
+            </td>
+          </tr>
+        #{/list}
+        </tbody>
+      </table>
+#{/if}
+#{else}
+	<div class="alert alert-error">
+  		<button type="button" class="close" data-dismiss="alert">&times;</button>
+  		<h4>Info!</h4>
+  		You do not have any node...
+	</div>
+#{/else}
+
+<div class="row" id="add">
+	<div class="span2">&nbsp;</div>
+	<div class="span8 well">
+	  	<legend>Add a new Node</legend>
+	    <form accept-charset="UTF-8" action="@{NodesController.doCreateNode()}" method="post">
+		    <label>HostName / IP</label>
+	        <input class="span6" name="host" placeholder="Hostname" value="${params?.host}${flash?.host}" type="text"> 
+		    <label>Port</label>
+	        <input class="span6" name="port" placeholder="Port" value="${params?.port}${flash?.port}" type="text"> 
+		    <label>Login</label>
+	        <input class="span6" name="login" placeholder="Login" value="${params?.login}${flash?.login}" type="text"> 
+		    <label>Password</label>
+	        <input class="span6" name="password" placeholder="Password" value="${params?.password}${flash?.password}" type="password"> 
+	        <div class="row">
+	        	<div class="span8">
+	        		<button class="btn btn-primary" type="submit">Add</button>
+	    		</div>
+	    	</div>
+	    </form>
+	</div>
+	<div class="span2">&nbsp;</div>
+</div>

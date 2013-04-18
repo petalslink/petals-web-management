@@ -1,0 +1,42 @@
+#{extends 'main.html' /} #{set title:'Endpoints' /}
+
+<ul class="breadcrumb">
+  <li><a href="@{Application.index()}">Home</a> <span class="divider">/</span></li>
+  <li class="active">Endpoints</li>
+</ul>
+
+<div class="well">
+	<a href="@{EndpointsController.synchronizeAll()}" class="btn">Synchronize All</a>
+	&nbsp;
+	<a href="@{EndpointsController.synchronize()}" class="btn">Synchronize Current</a>
+</div>
+
+#{if endpoints}
+<table class="table table-striped">
+       <thead>
+         <tr>
+           <th>Name</th>
+           <th>Service</th>
+           <th>Interfaces</th>
+           <th>Actions</th>
+         </tr>
+       </thead>
+       <tbody>
+       #{list endpoints, as : 'endpoint'}
+         <tr>
+         	<td align="left"><a href="#">${endpoint.endpointName}</a></td>
+           <td></td>
+           <td></td>
+           <td>
+			<a href="#" class="btn">Details</a>
+           </td>
+         </tr>
+       #{/list}
+       </tbody>
+   </table>
+   #{/if}
+   #{else}
+<div class="alert alert-info">
+	No endpoints
+</div>
+#{/else}

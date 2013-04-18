@@ -17,23 +17,34 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
+package models;
 
-import models.Message;
-import play.jobs.Every;
-import play.jobs.Job;
-import controllers.WebSocket;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Entity;
+
+import play.db.jpa.Model;
 
 /**
+ * Manage remote artifacts URLs
+ * 
  * @author chamerling
- *
+ * 
  */
-@Every("30s")
-public class BackgroundJob extends Job {
+@Entity
+public class ArtifactURL extends Model {
 
-	public void doJob() throws Exception {
-		Message message = new Message();
-		message.title = "Ping";
-		message.content = "...";
-		WebSocket.liveStream.publish(message);
+	public String name;
+
+	public String version;
+
+	public String url;
+
+	public Date date;
+
+	public static List<ArtifactURL> byName() {
+		return ArtifactURL.find("order by name desc").fetch();
 	}
+
 }

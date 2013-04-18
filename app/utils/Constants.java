@@ -17,23 +17,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-
-import models.Message;
-import play.jobs.Every;
-import play.jobs.Job;
-import controllers.WebSocket;
+package utils;
 
 /**
  * @author chamerling
  *
  */
-@Every("30s")
-public class BackgroundJob extends Job {
+public interface Constants {
 
-	public void doJob() throws Exception {
-		Message message = new Message();
-		message.title = "Ping";
-		message.content = "...";
-		WebSocket.liveStream.publish(message);
-	}
+	public String CACHE_CONTAINER_ADMIN = "container.admin";
+
+	public String SESSION_CURRENT_NODE = "currentnode";
+
 }

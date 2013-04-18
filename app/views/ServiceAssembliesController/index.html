@@ -1,0 +1,50 @@
+#{extends 'main.html' /} #{set title:'Service Assemblies' /}
+
+<ul class="breadcrumb">
+  <li><a href="@{Application.index()}">Home</a> <span class="divider">/</span></li>
+  <li class="active">Service Assemblies</li>
+</ul>
+
+<div class="well">
+	<a class="btn" href="">Deploy</a>&nbsp;
+</div>
+
+#{if sas}
+	<div class="alert alert-info">
+  		<button type="button" class="close" data-dismiss="alert">&times;</button>
+  		<h4>Info!</h4>
+  		You have ${sas.size()} available service assembl${sas.pluralize('y', 'ies')}
+	</div>
+	
+	<table class="table table-striped">
+        <thead>
+          <tr>
+          	<th>#</th>
+            <th>ID</th>
+            <th>State</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        %{int i = 0}%
+        #{list sas, as : 'sa'}
+          <tr>
+          <td align="left">${i++}</td>
+            <td><a href="">${sa.name}</a></td>
+            <td>-</td>
+            <td>
+            	<a href="@{ServiceAssemblyController.details(sa.name)}" class="btn" target="_blank">Details</a>&nbsp;
+				<a href="" class="btn btn-danger">-</a>
+            </td>
+          </tr>
+        #{/list}
+        </tbody>
+      </table>
+#{/if}
+#{else}
+	<div class="alert alert-error">
+  		<button type="button" class="close" data-dismiss="alert">&times;</button>
+  		<h4>Info!</h4>
+  		You do not have any service assembly in the current node.
+	</div>
+#{/else}

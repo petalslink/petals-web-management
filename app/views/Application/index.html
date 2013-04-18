@@ -1,7 +1,28 @@
 #{extends 'main.html' /} #{set title:'Home' /}
 
-<h3>Petals ESB Management</h3>
+<ul class="breadcrumb">
+  <li><a href="@{Application.index()}">Home</a> <span class="divider">/</span></li>
+  <li class="active">Activity</li>
+</ul>
 
-<div class="well">
-...
+#{if events}
+	#{list events, as : 'event'}
+	<div class="media">
+	  <a class="pull-left" href="#">
+	    <img class="media-object" width="50" height="50" src="@{'/public/assets/img/avatar.png'}">
+	  </a>
+	  <div class="media-body">
+		<blockquote>
+	  		<p><span class="label label-${event.type}">${event.type.capitalize()}</span>&nbsp;${event.message}</p>
+	  		<small>${event.date.since()}, ${event.date.format('dd MMMM yyyy hh:mm:ss')}</small>
+		</blockquote>
+	  </div>
+	</div>
+	#{/list}
+#{/if}
+#{else}
+<div class="alert">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  No events.
 </div>
+#{/else}

@@ -17,23 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
+package utils;
 
-import models.Message;
-import play.jobs.Every;
-import play.jobs.Job;
-import controllers.WebSocket;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * @author chamerling
- *
+ * 
  */
-@Every("30s")
-public class BackgroundJob extends Job {
+public class Check {
 
-	public void doJob() throws Exception {
-		Message message = new Message();
-		message.title = "Ping";
-		message.content = "...";
-		WebSocket.liveStream.publish(message);
+	public static boolean isInteger(String value) {
+		boolean result = true;
+		try {
+			Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			result = false;
+		}
+		return result;
 	}
+
+	public static boolean isURL(String value) {
+		boolean result = true;
+		try {
+			new URL(value);
+		} catch (MalformedURLException e) {
+			result = false;
+		}
+		return result;
+	}
+
 }

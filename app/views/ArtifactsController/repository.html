@@ -1,0 +1,62 @@
+#{extends 'main.html' /} #{set title:'Artifacts Repository' /}
+
+<ul class="breadcrumb">
+  <li><a href="@{Application.index()}">Home</a> <span class="divider">/</span></li>
+  <li><a href="@{ArtifactsController.index()}">Artifacts</a> <span class="divider">/</span></li>
+  <li class="active">Repository</li>
+</ul>
+
+<div class="well">
+  <a href="#add" class="btn">Add</a>
+</div>
+
+#{if artifacts}
+    <table class="table table-striped">
+       <thead>
+         <tr>
+           <th>Name</th>
+           <th>Version</th>
+           <th>URL</th>
+           <th>Actions</th>
+         </tr>
+       </thead>
+       <tbody>
+       #{list artifacts, as : 'artifact'}
+         <tr>
+         	<td align="left"><a href="#">${artifact.name}</a></td>
+           	<td>${artifact.version}</td>
+           	<td><a href="${artifact.url}" target="_blank">${artifact.url}</a></td>
+           	<td>
+				<a href="@{ArtifactsController.repositoryDeploy(artifact.id)}" class="btn">Deploy</a>
+           	</td>
+         </tr>
+       #{/list}
+       </tbody>
+    </table>
+#{/if}
+#{else}
+<div class="alert alert-info">
+No artifacts
+</div>
+#{/else}
+
+<div class="row" id="add">
+	<div class="span2">&nbsp;</div>
+	<div class="span8 well">
+	  	<legend>Add a new Artifact URL</legend>
+	    <form accept-charset="UTF-8" action="@{ArtifactsController.doRepositoryCreate()}" method="post">
+		    <label>Name</label>
+	        <input class="span6" name="name" placeholder="Name" value="${params?.name}${flash?.name}" type="text"> 
+		    <label>URL</label>
+	        <input class="span6" name="url" placeholder="URL" value="${params?.url}${flash?.url}" type="text"> 
+		    <label>Version</label>
+	        <input class="span6" name="version" placeholder="Version" value="${params?.version}${flash?.version}" type="text"> 
+	        <div class="row">
+	        	<div class="span8">
+	        		<button class="btn btn-primary" type="submit">Add</button>
+	    		</div>
+	    	</div>
+	    </form>
+	</div>
+	<div class="span2">&nbsp;</div>
+</div>

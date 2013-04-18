@@ -20,12 +20,18 @@
 package models;
 
 /**
+ * Web socket message
+ * 
  * @author chamerling
- *
+ * 
  */
 public class Message {
 	
 	public String title;
 	
 	public String content;
+
+	public String type;
+
+	public String image;
 }

@@ -8,8 +8,32 @@
 # Home page
 GET     /                                       Application.index
 
+GET     /nodes                             		NodesController.index
+GET     /nodes/disconnect                		NodesController.disconnect
+GET     /nodes/sync                		        NodesController.syncTopology
+GET     /nodes/{id}                      		NodesController.node
+GET     /nodes/{id}/connect                		NodesController.connect
+GET     /nodes/{id}/stop                		NodesController.stop
+GET     /nodes/{id}/shutdown               		NodesController.shutdown
+
+GET     /artifacts                              ArtifactsController.index
+
+GET     /artifacts/repository                   ArtifactsController.repository
+POST    /artifacts/repository                   ArtifactsController.doRepositoryCreate
+GET     /artifacts/repository/{id}/deploy       ArtifactsController.repositoryDeploy
+GET     /artifacts/components/{name}            ArtifactsController.component
+GET     /artifacts/deploy                       ArtifactsController.deploy
+POST    /artifacts/deploy                       ArtifactsController.doDeployAndStartArtifact
+GET     /artifacts/undeploy/{name}              ArtifactsController.doStopAndUndeployArtifact
+GET     /artifacts/sls/{name}                   ArtifactsController.sl
+GET     /artifacts/sas/{name}                   ArtifactsController.sa
+
+GET     /endpoints                              EndpointsController.index
+GET     /endpoints/sync                         EndpointsController.synchronize()
+GET     /endpoints/syncall                      EndpointsController.synchronizeAll()
+
 # Websocket
-WS      /websocket/backgroundMessage            BackgroundTaskWebSocket.pushNewMessage
+WS      /websocket/petals                       WebSocket.pushNewMessage
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

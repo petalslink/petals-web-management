@@ -17,23 +17,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
+package models;
 
-import models.Message;
-import play.jobs.Every;
-import play.jobs.Job;
-import controllers.WebSocket;
+import javax.persistence.Entity;
+
+import play.db.jpa.Model;
 
 /**
  * @author chamerling
  *
  */
-@Every("30s")
-public class BackgroundJob extends Job {
+@Entity
+public class Node extends Model {
 
-	public void doJob() throws Exception {
-		Message message = new Message();
-		message.title = "Ping";
-		message.content = "...";
-		WebSocket.liveStream.publish(message);
-	}
+	public String host;
+
+	public int port;
+
+	public String login;
+
+	public String password;
+
 }

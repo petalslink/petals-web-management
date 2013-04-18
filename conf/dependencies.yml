@@ -4,6 +4,7 @@ require:
     - play
     - play -> crud
     - play -> secure
+    - com.google.guava -> guava 13.0.1
     - org.ow2.petals -> petals-admin-jmx 1.2.0-SNAPSHOT
 
 repositories:
@@ -13,10 +14,12 @@ repositories:
         root: "http://repository.ow2.org/nexus/content/repositories/snapshots/"
         contains:
             - org.ow2.petals -> petals-admin-jmx 1.2.0-SNAPSHOT
-            - org.ow2.petals->petals-jmx-api-api 1.0.0-SNAPSHOT
-            - org.ow2.petals->petals-admin-api 1.2.0-SNAPSHOT
-            - org.ow2.petals->petals-jmx-api-impl 1.0.0-SNAPSHOT
-    
+            - org.ow2.petals -> petals-jmx-api-api 1.0.0-SNAPSHOT
+            - org.ow2.petals -> petals-admin-api 1.2.0-SNAPSHOT
+            - org.ow2.petals -> petals-jmx-api-impl 1.0.0-SNAPSHOT
+            - org.ow2.petals -> petals-basis-api *
+            - org.ow2.petals -> petals-client-server-api *
+
     - petalslink.release:
         type: iBiblio
         root: "http://maven.petalslink.com/public"

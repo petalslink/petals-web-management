@@ -21,15 +21,17 @@ package controllers;
 
 import java.util.List;
 
-import play.mvc.With;
-import play.mvc.Controller;
+import models.BaseEvent;
+
 
 /**
  * @author chamerling
  */
-public class Application extends Controller {
+public class Application extends PetalsController {
 	
 	public static void index() {
-		render();
+		List<BaseEvent> events = BaseEvent.pasts();
+		render(events);
 	}
+
 }

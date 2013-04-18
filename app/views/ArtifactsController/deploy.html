@@ -1,0 +1,24 @@
+#{extends 'main.html' /} #{set title:'Artifacts Deployment' /}
+
+<ul class="breadcrumb">
+  <li><a href="@{Application.index()}">Home</a> <span class="divider">/</span></li>
+  <li><a href="@{ArtifactsController.index()}">Artifacts</a> <span class="divider">/</span></li>
+  <li class="active">Deploy</li>
+</ul>
+
+<div class="row" id="add">
+	<div class="span2">&nbsp;</div>
+	<div class="span8 well">
+	  	<legend>Deploy a new Artifact</legend>
+	    <form accept-charset="UTF-8" action="@{ArtifactsController.doDeployAndStartArtifact()}" method="post">
+		    <label>URL</label>
+	        <input class="span6" name="url" placeholder="URL" value="${params?.url}${flash?.url}" type="text"> 
+	        <div class="row">
+	        	<div class="span8">
+	        		<button class="btn btn-primary" type="submit">Deploy</button>
+	    		</div>
+	    	</div>
+	    </form>
+	</div>
+	<div class="span2">&nbsp;</div>
+</div>

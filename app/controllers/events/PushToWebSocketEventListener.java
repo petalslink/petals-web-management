@@ -17,29 +17,33 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package controllers;
+package controllers.events;
 
+import models.BaseEvent;
 import models.Message;
-import play.libs.F.EventStream;
-import play.mvc.WebSocketController;
+import play.Logger;
 
-import com.google.gson.Gson;
+import com.google.common.eventbus.Subscribe;
+
+import controllers.WebSocket;
 
 /**
+ * Listen to user activities and store them...
+ * 
  * @author chamerling
- *
+ * 
  */
-public class BackgroundTaskWebSocket extends WebSocketController {
-	
-	public static EventStream<Message> liveStream = new EventStream<Message>();
+public class PushToWebSocketEventListener {
 
-	public static void pushNewMessage() {
-		while (inbound.isOpen()) {
-			Message message = await(liveStream.nextEvent());
-			if (message != null) {
-				String json = new Gson().toJson(message);
-				outbound.send(json);
-			}
+	@Subscribe
+	public void emit(BaseEvent event) {
+		if (event == null) {
+			return;
 		}
+		Logger.info("New event to push to websocket %s", event.message);
+		Message message = new Message();
+		message.content = event.message;
+		message.title = "New server event";
+		WebSocket.liveStream.publish(message);
 	}
 }

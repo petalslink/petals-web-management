@@ -1,0 +1,21 @@
+Node(localhost1):
+  host: localhost
+  port: 7700
+  login: petals
+  password: petals
+
+Node(localhost2):
+  host: localhost
+  port: 7701
+  login: petals
+  password: petals
+
+ArtifactURL(petals-bc-soap):
+  name: petals-bc-soap
+  version: 4.0
+  url: http://localhost/foo/bar/petals-bc-soap.zip
+
+ArtifactURL(petals-bc-rest):
+  name: petals-bc-rest
+  version: 1.0
+  url: http://localhost/foo/bar/petals-bc-rest.zip

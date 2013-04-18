@@ -17,23 +17,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
+package models;
 
-import models.Message;
-import play.jobs.Every;
-import play.jobs.Job;
-import controllers.WebSocket;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Entity;
+
+import play.db.jpa.Model;
 
 /**
  * @author chamerling
- *
+ * 
  */
-@Every("30s")
-public class BackgroundJob extends Job {
+@Entity
+public class BaseEvent extends Model {
 
-	public void doJob() throws Exception {
-		Message message = new Message();
-		message.title = "Ping";
-		message.content = "...";
-		WebSocket.liveStream.publish(message);
+	public Date date;
+
+	public String message;
+
+	public String type;
+
+	public BaseEvent(String message, String type) {
+		this.message = message;
+		this.type = type;
+		this.date = new Date();
 	}
+
+	public static List<BaseEvent> pasts() {
+		return BaseEvent.find("date < ? order by date desc", new Date())
+				.fetch();
+	}
+
 }

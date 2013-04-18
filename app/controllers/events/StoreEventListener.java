@@ -17,23 +17,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
+package controllers.events;
 
-import models.Message;
-import play.jobs.Every;
-import play.jobs.Job;
-import controllers.WebSocket;
+import models.BaseEvent;
+import play.Logger;
+
+import com.google.common.eventbus.Subscribe;
 
 /**
+ * Listen to user activities and store them...
+ * 
  * @author chamerling
- *
+ * 
  */
-@Every("30s")
-public class BackgroundJob extends Job {
+public class StoreEventListener {
 
-	public void doJob() throws Exception {
-		Message message = new Message();
-		message.title = "Ping";
-		message.content = "...";
-		WebSocket.liveStream.publish(message);
+	@Subscribe
+	public void store(BaseEvent event) {
+		if (event == null) {
+			return;
+		}
+		Logger.info("New event to store %s", event.message);
+		event.save();
 	}
 }

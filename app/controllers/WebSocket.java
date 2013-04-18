@@ -17,23 +17,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
+package controllers;
 
 import models.Message;
-import play.jobs.Every;
-import play.jobs.Job;
-import controllers.WebSocket;
+import play.libs.F.EventStream;
+import play.mvc.WebSocketController;
+
+import com.google.gson.Gson;
 
 /**
  * @author chamerling
  *
  */
-@Every("30s")
-public class BackgroundJob extends Job {
+public class WebSocket extends WebSocketController {
+	
+	public static EventStream<Message> liveStream = new EventStream<Message>();
 
-	public void doJob() throws Exception {
-		Message message = new Message();
-		message.title = "Ping";
-		message.content = "...";
-		WebSocket.liveStream.publish(message);
+	public static void pushNewMessage() {
+		while (inbound.isOpen()) {
+			Message message = await(liveStream.nextEvent());
+			if (message != null) {
+				String json = new Gson().toJson(message);
+				outbound.send(json);
+			}
+		}
 	}
 }
