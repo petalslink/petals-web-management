@@ -29,4 +29,12 @@ public interface Constants {
 
 	public String SESSION_CURRENT_NODE = "currentnode";
 
+	public static String EVENT_SUCCESS = "success";
+
+	public static String EVENT_WARNING = "warning";
+
+	public static String EVENT_INFO = "info";
+
+	public static String ARTIFACTS_FOLDER = "artifacts";
+
 }

@@ -74,6 +74,21 @@ public class PetalsController extends Controller {
 		bus().post(event);
 	}
 
+	/**
+	 * New event occured!
+	 * 
+	 * @param type
+	 * @param pattern
+	 * @param params
+	 */
+	protected static void event(String type, String pattern,
+			Object... params) {
+		if (pattern == null) {
+			return;
+		}
+		newEvent(BaseEvent.event(type, pattern, params));
+	}
+
 	public static EventBus bus() {
 		if (bus == null) {
 			bus = new EventBus();

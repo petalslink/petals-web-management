@@ -50,4 +50,8 @@ public class BaseEvent extends Model {
 				.fetch();
 	}
 
+	public static BaseEvent event(String type, String pattern, Object... params) {
+		return new BaseEvent(String.format(pattern, params), type);
+	}
+
 }
