@@ -21,6 +21,7 @@ repositories:
             - org.ow2.petals -> petals-client-server-api *
             - org.ow2.petals -> petals-jmx-api-parent *
             - org.ow2.petals -> petals-client-tools-parent *
+            - org.ow2.petals -> petals-tools-commons-parent *
             - org.ow2.petals -> petals-parent *
 
     - petalslink.release:
