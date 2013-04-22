@@ -22,6 +22,13 @@ Using Eclipse IDE:
 
 Will generate an Eclipse project, then import it in Eclipse.
 
+## Doc
+
+### Artifacts Management
+
+- The application can host artifacts. Once uploaded, they are available in the public/artifacts folder and can be downloaded directly.
+- Note that the application will check for files in this folder on start and will register ZIP files as artifacts in the local database iof they are not already available. This can be used for quick initialization.
+
 ## License
 
 Copyright (c) 2013, Linagora

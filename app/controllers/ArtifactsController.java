@@ -19,10 +19,18 @@
  */
 package controllers;
 
+import static utils.Constants.EVENT_INFO;
+import static utils.Constants.EVENT_WARNING;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +39,8 @@ import models.BaseEvent;
 import models.Node;
 import models.Property;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.ow2.petals.admin.api.artifact.Artifact;
 import org.ow2.petals.admin.api.artifact.Component;
 import org.ow2.petals.admin.api.artifact.Component.ComponentType;
@@ -38,9 +48,12 @@ import org.ow2.petals.admin.api.artifact.ServiceAssembly;
 import org.ow2.petals.admin.api.artifact.SharedLibrary;
 
 import play.Logger;
+import play.Play;
 import play.data.validation.Required;
 import play.jobs.Job;
+import play.libs.Files;
 import utils.Check;
+import utils.Constants;
 import utils.PetalsAdmin;
 
 import com.google.common.base.Function;
@@ -143,7 +156,7 @@ public class ArtifactsController extends PetalsController {
 					PetalsController.bus().post(
 							new BaseEvent(String.format(
 									"Artifact deployed and started from %s",
-									url), "info"));
+									url), EVENT_INFO));
 				} catch (Exception e) {
 					e.printStackTrace();
 					PetalsController.bus().post(
@@ -266,10 +279,22 @@ public class ArtifactsController extends PetalsController {
 	}
 
 	public static void repository() {
-		List<ArtifactURL> artifacts = ArtifactURL.byName();
+		Collection<ArtifactURL> artifacts = Collections2.transform(
+				ArtifactURL.byName(), new Function<ArtifactURL, ArtifactURL>() {
+					public ArtifactURL apply(ArtifactURL input) {
+						input.url = getArtifactURL(input);
+						return input;
+					}
+				});
+
 		render(artifacts);
 	}
 
+	/**
+	 * Deploy from repository ie get the URL from the repository.
+	 * 
+	 * @param id
+	 */
 	public static void repositoryDeploy(Long id) {
 		final ArtifactURL artifact = ArtifactURL.findById(id);
 		if (artifact == null) {
@@ -284,7 +309,8 @@ public class ArtifactsController extends PetalsController {
 			public void doJob() throws Exception {
 				try {
 					PetalsAdmin.getArtifactAdministration(node)
-							.deployAndStartArtifact(new URL(artifact.url));
+							.deployAndStartArtifact(
+									new URL(getArtifactURL(artifact)));
 
 					PetalsController.bus().post(
 							new BaseEvent(String.format(
@@ -300,7 +326,8 @@ public class ArtifactsController extends PetalsController {
 			}
 		}.in(2); // delay...
 
-		flash.success("Artifact is being deployed from URL %s...", artifact.url);
+		flash.success("Artifact is being deployed from URL %s...",
+				getArtifactURL(artifact));
 		index();
 	}
 
@@ -326,5 +353,87 @@ public class ArtifactsController extends PetalsController {
 				name), "info"));
 		flash.success("Artifact %s has been registered", name);
 		repository();
+	}
+
+	/**
+	 * Upload a new artifact and add it to the artifacts list
+	 */
+	public static void doUpload(String name, String version, File file) {
+
+		if (file == null) {
+			flash.error("Can not get input file");
+			repository();
+		}
+
+		if (name == null || name.trim().length() == 0) {
+			name = file.getName();
+		}
+
+		// TODO : get a new name if already exists...
+		File out = new File(getArtifactsFolder(), file.getName());
+		try {
+			FileInputStream is = new FileInputStream(file);
+			IOUtils.copy(is, new FileOutputStream(out));
+		} catch (IOException e) {
+			e.printStackTrace();
+			event(EVENT_WARNING, "Can not copy file to local folder %s",
+					e.getMessage());
+			flash.error("Can not copy file to local folder : %s",
+					e.getMessage());
+			repository();
+		}
+
+		// when copied, store the artifact in the database
+		event(EVENT_INFO, "Artifact %s uploaded into repository", name);
+		ArtifactURL artifact = new ArtifactURL();
+		artifact.date = new Date();
+		artifact.name = name;
+		artifact.version = version == null ? "" : version;
+		artifact.local = true;
+		// storing just the local name for later processing and URL handling...
+		artifact.url = file.getName();
+		artifact.save();
+
+		flash.success("Artifact deployed");
+		repository();
+	}
+
+	/**
+	 * Delete local files and their entries in the DB
+	 */
+	public static void deleteLocalArtifacts() {
+		List<ArtifactURL> locals = ArtifactURL.locals();
+		for (ArtifactURL artifactURL : locals) {
+			artifactURL.delete();
+		}
+
+		deleteLocalArtifactFiles();
+
+		flash.success("Local artifacts deleted");
+		repository();
+	}
+
+	/**
+	 * Protected so that it does not fire a render event...
+	 */
+	protected static void deleteLocalArtifactFiles() {
+		Iterator<File> iter = FileUtils.iterateFiles(getArtifactsFolder(),
+				new String[] { "zip" }, false);
+		while (iter.hasNext()) {
+			Files.delete(iter.next());
+		}
+		return;
+	}
+
+	public static File getArtifactsFolder() {
+		return new File(Play.getFile("public"), Constants.ARTIFACTS_FOLDER);
+	}
+
+	public static String getArtifactURL(ArtifactURL artifact) {
+		if (artifact.local) {
+			return request.getBase() + "/public/" + Constants.ARTIFACTS_FOLDER
+					+ "/" + artifact.url;
+		}
+		return artifact.url;
 	}
 }

@@ -24,9 +24,13 @@ GET     /artifacts/repository/{id}/deploy       ArtifactsController.repositoryDe
 GET     /artifacts/components/{name}            ArtifactsController.component
 GET     /artifacts/deploy                       ArtifactsController.deploy
 POST    /artifacts/deploy                       ArtifactsController.doDeployAndStartArtifact
+POST    /artifacts/upload                       ArtifactsController.doUpload
 GET     /artifacts/undeploy/{name}              ArtifactsController.doStopAndUndeployArtifact
 GET     /artifacts/sls/{name}                   ArtifactsController.sl
 GET     /artifacts/sas/{name}                   ArtifactsController.sa
+GET     /artifacts/delete/locals                ArtifactsController.deleteLocalArtifacts
+
+GET     /public/artifacts/                      ArtifactsController.repository
 
 GET     /endpoints                              EndpointsController.index
 GET     /endpoints/sync                         EndpointsController.synchronize()

@@ -43,8 +43,21 @@ public class ArtifactURL extends Model {
 
 	public Date date;
 
+	/**
+	 * Local artifact (stored in the artifacts folder)
+	 */
+	public boolean local;
+
 	public static List<ArtifactURL> byName() {
 		return ArtifactURL.find("order by name desc").fetch();
+	}
+
+	public static List<ArtifactURL> locals() {
+		return ArtifactURL.find("local=true").fetch();
+	}
+
+	public static boolean localExists(String url) {
+		return ArtifactURL.count("local=true and url like ?", url) > 0;
 	}
 
 }
