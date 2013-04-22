@@ -19,6 +19,9 @@ repositories:
             - org.ow2.petals -> petals-jmx-api-impl 1.0.0-SNAPSHOT
             - org.ow2.petals -> petals-basis-api *
             - org.ow2.petals -> petals-client-server-api *
+            - org.ow2.petals -> petals-jmx-api-parent *
+            - org.ow2.petals -> petals-client-tools-parent *
+            - org.ow2.petals -> petals-parent *
 
     - petalslink.release:
         type: iBiblio
