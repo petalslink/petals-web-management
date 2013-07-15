@@ -23,6 +23,15 @@ repositories:
             - org.ow2.petals -> petals-client-tools-parent *
             - org.ow2.petals -> petals-tools-commons-parent *
             - org.ow2.petals -> petals-parent *
+            - org.ow2.petals -> petals-jbi 1.3.2-SNAPSHOT
+            - org.ow2.petals -> petals-commons-log 1.0.2-SNAPSHOT
+
+    - petalslink.snapshot:
+        type: iBiblio
+        root: "http://maven.petalslink.com/public-snapshot"
+        contains:
+            - com.ebmwebsourcing.easycommons -> easycommons-lang 1.3-SNAPSHOT
+            - com.ebmwebsourcing -> ebmwebsourcing 7.3.0-SNAPSHOT
 
     - petalslink.release:
         type: iBiblio
