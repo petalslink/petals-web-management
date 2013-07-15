@@ -22,3 +22,5 @@ logs/
 
 .idea/
 *.iml
+*.ipr
+*.iws
