@@ -19,16 +19,14 @@
  */
 package controllers;
 
-import java.util.List;
-
-import models.BaseEvent;
-
 import org.ow2.petals.admin.api.RegistryAdministration;
 import org.ow2.petals.admin.registry.Endpoint;
 import org.ow2.petals.admin.registry.RegistryView;
-
 import play.jobs.Job;
+import utils.ApplicationEvent;
 import utils.PetalsAdmin;
+
+import java.util.List;
 
 /**
  * @author chamerling
@@ -59,16 +57,9 @@ public class EndpointsController extends PetalsController {
 
 					try {
 						registry.synchronizeRegistryOnAllNodes();
-						PetalsController
-								.bus()
-								.post(new BaseEvent(
-										"All registries have been synchronized",
-										null));
-					} catch (Exception e) {
-						PetalsController.bus().post(
-								new BaseEvent(String.format(
-										"All Registries sync error : %s",
-										e.getMessage()), "warning"));
+						ApplicationEvent.info("All registries have been synchronized");
+                    } catch (Exception e) {
+                        ApplicationEvent.warning("All Registries sync error : %s", e.getMessage());
 					}
 				}
 			}.now();
@@ -89,13 +80,9 @@ public class EndpointsController extends PetalsController {
 				public void doJob() throws Exception {
 					try {
 						registry.synchronizeRegistry();
-						PetalsController.bus().post(
-								new BaseEvent("Registry Synchronized", null));
+                        ApplicationEvent.info("Registry Synchronized");
 					} catch (Exception e) {
-						PetalsController.bus().post(
-								new BaseEvent(String.format(
-										"Registry sync error : %s",
-										e.getMessage()), "warning"));
+                        ApplicationEvent.warning("Registry sync error : %s", e.getMessage());
 					}
 				}
 			}.now();

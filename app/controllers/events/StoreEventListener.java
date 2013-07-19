@@ -19,10 +19,9 @@
  */
 package controllers.events;
 
+import com.google.common.eventbus.Subscribe;
 import models.BaseEvent;
 import play.Logger;
-
-import com.google.common.eventbus.Subscribe;
 
 /**
  * Listen to user activities and store them...
@@ -32,12 +31,17 @@ import com.google.common.eventbus.Subscribe;
  */
 public class StoreEventListener {
 
+    /**
+     * Store the base event when published in the event bus
+     *
+     * @param event
+     */
 	@Subscribe
 	public void store(BaseEvent event) {
 		if (event == null) {
 			return;
 		}
-		Logger.info("New event to store %s", event.message);
+		Logger.debug("New event to store %s", event.message);
 		event.save();
 	}
 }

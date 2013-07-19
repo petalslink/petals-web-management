@@ -19,7 +19,6 @@
  */
 package controllers;
 
-import models.BaseEvent;
 import models.Node;
 import play.Logger;
 import play.mvc.Before;
@@ -27,17 +26,13 @@ import play.mvc.Controller;
 import play.mvc.Scope.Session;
 import utils.Constants;
 
-import com.google.common.eventbus.EventBus;
-
 /**
  * @author chamerling
  * 
  */
 public class PetalsController extends Controller {
 
-	private static EventBus bus;
-
-	@Before(unless = { "bus" })
+	@Before()
 	private static void currentNode() {
 		Logger.info("Getting current node");
 		String currentNode = session.get(Constants.SESSION_CURRENT_NODE);
@@ -66,34 +61,4 @@ public class PetalsController extends Controller {
 				: Long.parseLong(Session.current().get(
 						Constants.SESSION_CURRENT_NODE));
 	}
-
-	protected static void newEvent(BaseEvent event) {
-		if (event == null) {
-			return;
-		}
-		bus().post(event);
-	}
-
-	/**
-	 * New event occured!
-	 * 
-	 * @param type
-	 * @param pattern
-	 * @param params
-	 */
-	protected static void event(String type, String pattern,
-			Object... params) {
-		if (pattern == null) {
-			return;
-		}
-		newEvent(BaseEvent.event(type, pattern, params));
-	}
-
-	public static EventBus bus() {
-		if (bus == null) {
-			bus = new EventBus();
-		}
-		return bus;
-	}
-
 }

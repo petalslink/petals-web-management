@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import models.BaseEvent;
+
+import controllers.events.AlertEventListener;
+import controllers.events.PushToWebSocketEventListener;
+import controllers.events.StoreEventListener;
 import models.Node;
 import play.Logger;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
 import play.test.Fixtures;
-
-import com.google.common.eventbus.EventBus;
-
-import controllers.PetalsController;
-import controllers.events.PushToWebSocketEventListener;
-import controllers.events.StoreEventListener;
+import utils.ApplicationEvent;
 
 /**
  * Bootstrap some init data to avoid some useless test for the application long
@@ -38,15 +36,12 @@ public class Bootstrap extends Job {
 	@Override
 	public void doJob() throws Exception {
 
-		// loading event listeners
-		EventBus eventBus = PetalsController.bus();
-		eventBus.register(new StoreEventListener());
-		eventBus.register(new PushToWebSocketEventListener());
+        ApplicationEvent.register(new StoreEventListener(), new PushToWebSocketEventListener(), new AlertEventListener());
 
 		if (Node.count() == 0) {
 			Logger.info("Loading initial data");
 			Fixtures.loadModels("initial-data.yml");
 		}
-		eventBus.post(new BaseEvent("Application started", "info"));
+		ApplicationEvent.info("Application started");
 	}
 }

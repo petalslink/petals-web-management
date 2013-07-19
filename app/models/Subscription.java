@@ -1,7 +1,7 @@
 /**
  *
  * Copyright (c) 2013, Linagora
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -17,35 +17,44 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package controllers.events;
+package models;
 
-import com.google.common.eventbus.Subscribe;
-import controllers.WebSocket;
-import models.BaseEvent;
-import models.Message;
-import play.Logger;
+import play.db.jpa.Model;
+
+import javax.persistence.Entity;
+import java.util.Date;
 
 /**
+ * A monitoring/alarm subscription
  *
- * @author chamerling
- * 
+ * @author Christophe Hamerling - chamerling@linagora.com
  */
-public class PushToWebSocketEventListener {
+@Entity
+public class Subscription extends Model {
 
     /**
-     * Push the event to the client browser when emit is true
-     *
-     * @param event
+     * Target subscription
      */
-	@Subscribe
-	public void emit(BaseEvent event) {
-		if (event == null || !event.emit) {
-			return;
-		}
-		Logger.debug("New event to push to websocket %s", event.message);
-		Message message = new Message();
-		message.content = event.message;
-		message.title = "New server event";
-		WebSocket.liveStream.publish(message);
-	}
+    public String component;
+
+    /**
+     * TODO : JPA; For now we keep the models unlinked since we do not want to remove subscriptions when removing nodes...
+     */
+    public Node node;
+
+    /**
+     * Subscription date
+     */
+    public Date date;
+
+    /**
+     * Keep the subscription in the database but update its status when needed...
+     */
+    public String status = "";
+
+    /**
+     *
+     */
+    public Date unsubscribedAt;
+
 }

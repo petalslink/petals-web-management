@@ -19,11 +19,10 @@
  */
 package controllers;
 
+import com.google.gson.Gson;
 import models.Message;
 import play.libs.F.EventStream;
 import play.mvc.WebSocketController;
-
-import com.google.gson.Gson;
 
 /**
  * @author chamerling
@@ -33,7 +32,7 @@ public class WebSocket extends WebSocketController {
 	
 	public static EventStream<Message> liveStream = new EventStream<Message>();
 
-	public static void pushNewMessage() {
+	public static void newMessage() {
 		while (inbound.isOpen()) {
 			Message message = await(liveStream.nextEvent());
 			if (message != null) {

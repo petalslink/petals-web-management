@@ -1,7 +1,7 @@
 /**
  *
  * Copyright (c) 2013, Linagora
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -20,32 +20,20 @@
 package controllers.events;
 
 import com.google.common.eventbus.Subscribe;
-import controllers.WebSocket;
-import models.BaseEvent;
-import models.Message;
-import play.Logger;
+import controllers.AlertWebSocket;
+import models.Alert;
 
 /**
+ * React on alert events.
  *
- * @author chamerling
- * 
+ * @author Christophe Hamerling - chamerling@linagora.com
  */
-public class PushToWebSocketEventListener {
+public class AlertEventListener {
 
-    /**
-     * Push the event to the client browser when emit is true
-     *
-     * @param event
-     */
-	@Subscribe
-	public void emit(BaseEvent event) {
-		if (event == null || !event.emit) {
-			return;
-		}
-		Logger.debug("New event to push to websocket %s", event.message);
-		Message message = new Message();
-		message.content = event.message;
-		message.title = "New server event";
-		WebSocket.liveStream.publish(message);
-	}
+    @Subscribe
+    public void alert(Alert alert) {
+        if (alert != null) {
+            AlertWebSocket.alertStream.publish(alert);
+        }
+    }
 }

@@ -1,0 +1,68 @@
+#{extends 'main.html' /} #{set title:'Subscriptions' /}
+
+<ul class="breadcrumb">
+  <li><a href="@{Application.index()}">Home</a> <span class="divider">/</span></li>
+  <li><a href="@{MonitoringController.index()}">Monitoring</a> <span class="divider">/</span></li>
+  <li class="active">Subscriptions</li>
+</ul>
+
+<div class="well well-small">
+    <div class="btn-group">
+        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+            Actions
+            <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href="@{MonitoringController.index()}">Unsubscribe all</a></li>
+        </ul>
+    </div>
+</div>
+
+#{if subscriptions}
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Node</th>
+                <th>Date</th>
+                <th>Active</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        #{list subscriptions, as : 'subscription'}
+        #{if subscription.status == "Active"}
+            <tr class="success">
+        #{/if}
+        #{else}
+            <tr>
+        #{/else}
+            <td>${subscription.component}</td>
+            <td>${subscription.node.host}:${subscription.node.port}</td>
+            <td>${subscription.date.format('dd MMMM yyyy hh:mm:ss')}</td>
+            <td>${subscription.status.camelCase()}</td>
+            <td>
+                <div class="btn-group">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                        Actions
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="@{MonitoringController.unsubscribe(subscription.id)}">Unsubscribe</a></li>
+                        <li><a href="@{MonitoringController.delete(subscription.id)}">Force delete</a></li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        #{/list}
+        </tbody>
+    </table>
+#{/if}
+#{else}
+<div id="subscription-empty" class="alert alert-error">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h4>Info!</h4>
+    There are no subscriptions...
+</div>
+#{/else}

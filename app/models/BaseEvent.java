@@ -19,12 +19,12 @@
  */
 package models;
 
-import java.util.Date;
-import java.util.List;
+import play.db.jpa.Model;
 
 import javax.persistence.Entity;
-
-import play.db.jpa.Model;
+import javax.persistence.PostPersist;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author chamerling
@@ -38,6 +38,11 @@ public class BaseEvent extends Model {
 	public String message;
 
 	public String type;
+
+    /**
+     * Emit the event to the client?
+     */
+    public boolean emit = true;
 
 	public BaseEvent(String message, String type) {
 		this.message = message;
@@ -54,4 +59,11 @@ public class BaseEvent extends Model {
 		return new BaseEvent(String.format(pattern, params), type);
 	}
 
+    /**
+     * Post registration callback. Notifies the user about a new event
+     */
+    @PostPersist
+    public void notifyUser() {
+        //ApplicationEvent.live(this.message);
+    }
 }
