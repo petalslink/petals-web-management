@@ -19,11 +19,16 @@
  */
 package utils;
 
+import com.google.common.collect.Sets;
 import models.Node;
+import models.Property;
 import org.ow2.petals.admin.api.ArtifactAdministration;
 import org.ow2.petals.admin.api.ContainerAdministration;
 import org.ow2.petals.admin.api.PetalsAdministrationFactory;
 import org.ow2.petals.admin.api.RegistryAdministration;
+import org.ow2.petals.jmx.api.api.SystemMonitoringServiceClient;
+
+import java.util.Set;
 
 /**
  * @author chamerling
@@ -71,4 +76,35 @@ public class PetalsAdmin {
 		return PetalsAdministrationFactory.newInstance()
 				.newRegistryAdministration();
 	}
+
+    /**
+     * Return system info if possible
+     *
+     * @param node
+     * @return
+     * @throws Exception
+     */
+    public static Set<Property> systemInfo(Node node) throws Exception {
+        SystemMonitoringServiceClient client = JMXClientManager.get(node).getSystemMonitoringServiceClient();
+        if (client == null) {
+            return Sets.newHashSet();
+        }
+        Set<Property> info = Sets.newHashSet();
+        info.add(new Property("Available processors", "" + client.getAvailableProcessors()));
+        info.add(new Property("Committed Virtual Memory Size", "" + client.getCommittedVirtualMemorySize()));
+        info.add(new Property("Daemon Thread Count", "" + client.getDaemonThreadCount()));
+        info.add(new Property("Free Physical Memory Size", "" + client.getFreePhysicalMemorySize()));
+        //info.add(new Property("Heap Memory Usage", "" + client.getHeapMemoryUsage()));
+        info.add(new Property("Loaded Class Count", "" + client.getLoadedClassCount()));
+        info.add(new Property("Peak Thread Count", "" + client.getPeakThreadCount()));
+        info.add(new Property("Pending Objects", "" + client.getPendingObjects()));
+        info.add(new Property("Process CPU Time", "" + client.getProcessCpuTime()));
+        info.add(new Property("Thread Count", "" + client.getThreadCount()));
+        info.add(new Property("Total Loaded Class Count", "" + client.getTotalLoadedClassCount()));
+        info.add(new Property("Total Physical Memory Size", "" + client.getTotalPhysicalMemorySize()));
+        info.add(new Property("Total Started ThreadCount", "" + client.getTotalStartedThreadCount()));
+        info.add(new Property("Unloaded Class Count", "" + client.getUnloadedClassCount()));
+        info.add(new Property("Uptime", "" + client.getUptime()));
+        return info;
+    }
 }

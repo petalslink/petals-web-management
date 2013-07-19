@@ -29,8 +29,9 @@
 <div class="tabbable"> <!-- Only required for left/right tabs -->
   <ul class="nav nav-tabs">
     <li class="active"><a href="#tab1" data-toggle="tab">Properties</a></li>
-    <li><a href="#tab2" data-toggle="tab">Loggers</a></li>
-    <li><a href="#tab3" data-toggle="tab">Topology</a></li>
+    <li><a href="#tab2" data-toggle="tab">System</a></li>
+    <li><a href="#tab3" data-toggle="tab">Loggers</a></li>
+    <li><a href="#tab4" data-toggle="tab">Topology</a></li>
   </ul>
   <div class="tab-content">
     <div class="tab-pane active" id="tab1">
@@ -63,24 +64,20 @@
 		</div>
     </div>
     <div class="tab-pane" id="tab2">
-		<div id="loggers">
-			#{if loggers}
+		<div id="system">
+			#{if systemInfo}
 			<table class="table table-striped">
 		        <thead>
 		          <tr>
 		            <th>Name</th>
 		            <th>Value</th>
-		            <th>Actions</th>
 		          </tr>
 		        </thead>
 		        <tbody>
-		        #{list loggers, as : 'logger'}
+		        #{list systemInfo, as : 'system'}
 		          <tr>
-		          <td align="left"><b>${logger.name}</b></td>
-		            <td>${logger.level}</td>
-		            <td>
-						<a href="#" class="btn btn-danger">Change Level</a>
-		            </td>
+		            <td align="left"><b>${system.name}</b></td>
+		            <td>${system.value}</td>
 		          </tr>
 		        #{/list}
 		        </tbody>
@@ -92,6 +89,35 @@
 		</div>    
     </div>
     <div class="tab-pane" id="tab3">
+      <div id="loggers">
+      #{if loggers}
+          <table class="table table-striped">
+              <thead>
+              <tr>
+                  <th>Name</th>
+                  <th>Value</th>
+                  <th>Actions</th>
+              </tr>
+              </thead>
+              <tbody>
+                  #{list loggers, as : 'logger'}
+                  <tr>
+                      <td align="left"><b>${logger.name}</b></td>
+                      <td>${logger.level}</td>
+                      <td>
+                          <a href="#" class="btn btn-danger">Change Level</a>
+                      </td>
+                  </tr>
+                  #{/list}
+              </tbody>
+          </table>
+      #{/if}
+      #{else}
+          Not available
+      #{/else}
+      </div>
+    </div>
+    <div class="tab-pane" id="tab4">
     #{if topology}
     ...
     #{/if}

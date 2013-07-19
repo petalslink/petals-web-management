@@ -12,6 +12,9 @@ GET     /nodes                             		NodesController.index
 GET     /nodes/disconnect                		NodesController.disconnect
 GET     /nodes/sync                		        NodesController.syncTopology
 GET     /nodes/check                            NodesController.jsonCheckNode
+
+GET     /nodes/json/info                        NodesController.jsonSystemInfo
+
 GET     /nodes/{id}                      		NodesController.node
 GET     /nodes/{id}/connect                		NodesController.connect
 GET     /nodes/{id}/stop                		NodesController.stop

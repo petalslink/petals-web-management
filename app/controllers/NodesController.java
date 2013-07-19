@@ -22,6 +22,7 @@ package controllers;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSortedSet;
+import models.Message;
 import models.Node;
 import models.Property;
 import org.ow2.petals.admin.api.ContainerAdministration;
@@ -52,6 +53,7 @@ public class NodesController extends PetalsController {
 		String info = null;
 		Set<Property> properties = null;
 		Set<org.ow2.petals.admin.api.artifact.Logger> loggers = null;
+        Set<Property> systemInfo = null;
 
 		try {
 			ContainerAdministration admin = PetalsAdmin
@@ -84,6 +86,12 @@ public class NodesController extends PetalsController {
 								}
 							}).addAll(admin.getLoggers()).build();
 
+            systemInfo = ImmutableSortedSet.orderedBy(new Comparator<Property>() {
+                public int compare(Property r1, Property r2) {
+                    return r1.name.compareToIgnoreCase(r2.name);
+                }
+            }).addAll(PetalsAdmin.systemInfo(node)).build();
+
 			// TODO
 			// Not available in release 4.1
 			// Domain topology = admin.getTopology("foo");
@@ -91,7 +99,7 @@ public class NodesController extends PetalsController {
 			e.printStackTrace();
 			flash.error("Error while connecting to node : %s", e.getMessage());
 		}
-		render(node, info, properties, loggers);
+		render(node, info, properties, loggers, systemInfo);
 	}
 
 	public static void connect(long id) {
@@ -207,6 +215,20 @@ public class NodesController extends PetalsController {
 		flash.success("Node %s:%s has been registered", host, port);
 		index();
 	}
+
+    public static void jsonSystemInfo() {
+        Node node = getCurrentNode();
+
+        try {
+            renderJSON(PetalsAdmin.systemInfo(node));
+        } catch (Exception e) {
+            Logger.error(e.getMessage());
+            Message m = new Message();
+            m.type = "error";
+            m.content = e.getMessage();
+            renderJSON(m);
+        }
+    }
 
     /**
      * Check that the current node is reachable

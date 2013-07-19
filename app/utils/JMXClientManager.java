@@ -26,6 +26,7 @@ import org.ow2.petals.jmx.api.api.JMXClient;
 import play.Logger;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Christophe Hamerling - chamerling@linagora.com
@@ -33,7 +34,7 @@ import java.util.concurrent.ExecutionException;
 public class JMXClientManager {
 
     private static LoadingCache<Node, JMXClient> clients = CacheBuilder.newBuilder()
-            .maximumSize(1000).removalListener(new RemovalListener<Node, JMXClient>() {
+            .maximumSize(1000).expireAfterAccess(60, TimeUnit.SECONDS).removalListener(new RemovalListener<Node, JMXClient>() {
                 @Override
                 public void onRemoval(RemovalNotification<Node, JMXClient> objectObjectRemovalNotification) {
                     Logger.info("JMXClient removed from cache : %s", objectObjectRemovalNotification.getKey().toString());
