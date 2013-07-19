@@ -22,7 +22,6 @@ GET     /artifacts/repository                   ArtifactsController.repository
 POST    /artifacts/repository                   ArtifactsController.doRepositoryCreate
 GET     /artifacts/repository/{id}/deploy       ArtifactsController.repositoryDeploy
 GET     /artifacts/components/{name}            ArtifactsController.component
-GET     /artifacts/deploy                       ArtifactsController.deploy
 POST    /artifacts/deploy                       ArtifactsController.doDeployAndStartArtifact
 POST    /artifacts/upload                       ArtifactsController.doUpload
 GET     /artifacts/undeploy/{name}              ArtifactsController.doStopAndUndeployArtifact

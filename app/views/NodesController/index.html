@@ -6,7 +6,7 @@
 </ul>
 
 <div class="well">
-	<a class="btn" href="#add">Add</a>&nbsp;
+    <a href="#addNodeModal" role="button" class="btn" data-toggle="modal">Add</a>
 	<a class="btn" href="@{NodesController.syncTopology()}">Sync With Topology</a>
 </div>
 
@@ -47,25 +47,51 @@
 	</div>
 #{/else}
 
-<div class="row" id="add">
-	<div class="span2">&nbsp;</div>
-	<div class="span8 well">
-	  	<legend>Add a new Node</legend>
-	    <form accept-charset="UTF-8" action="@{NodesController.doCreateNode()}" method="post">
-		    <label>HostName / IP</label>
-	        <input class="span6" name="host" placeholder="Hostname" value="${params?.host}${flash?.host}" type="text"> 
-		    <label>Port</label>
-	        <input class="span6" name="port" placeholder="Port" value="${params?.port}${flash?.port}" type="text"> 
-		    <label>Login</label>
-	        <input class="span6" name="login" placeholder="Login" value="${params?.login}${flash?.login}" type="text"> 
-		    <label>Password</label>
-	        <input class="span6" name="password" placeholder="Password" value="${params?.password}${flash?.password}" type="password"> 
-	        <div class="row">
-	        	<div class="span8">
-	        		<button class="btn btn-primary" type="submit">Add</button>
-	    		</div>
-	    	</div>
-	    </form>
-	</div>
-	<div class="span2">&nbsp;</div>
+<!-- Add node modal -->
+<div id="addNodeModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addNodeModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="addNodeModalLabel">Add a new Node</h3>
+    </div>
+    <div class="modal-body">
+        #{ifErrors}
+            <div class="alert alert-error">
+                <p><strong>Some values are invalid, please fix them...</strong></p>
+                <ul>
+                    #{errors}
+                        <li>${error}</li>
+                    #{/errors}
+                </ul>
+            </div>
+        #{/ifErrors}
+        <form accept-charset="UTF-8" id="addnodeform" class="addnodeform" action="@{NodesController.doCreateNode}">
+            <label>HostName / IP</label>
+            <input class="span5" name="host" placeholder="Hostname" value="${params?.host}${flash?.host}" type="text">
+            <label>Port</label>
+            <input class="span5" name="port" placeholder="Port" value="${params?.port}${flash?.port}" type="text">
+            <label>Login</label>
+            <input class="span5" name="login" placeholder="Login" value="${params?.login}${flash?.login}" type="text">
+            <label>Password</label>
+            <input class="span5" name="password" placeholder="Password" value="${params?.password}${flash?.password}" type="password">
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button id="addnodebutton" class="btn btn-primary" type="submit">Add</button>
+    </div>
 </div>
+
+#{set 'lastScripts'}
+    <script>
+        window.onload = function(){
+            #{ifErrors}
+                $('#addNodeModal').modal('show')
+            #{/ifErrors}
+        }
+
+        $('#addnodebutton').click(function(){
+            $('#addnodeform').submit();
+        });
+
+    </script>
+#{/set}

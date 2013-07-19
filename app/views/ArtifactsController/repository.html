@@ -7,7 +7,7 @@
 </ul>
 
 <div class="well">
-  <a href="#add" class="btn">Add</a>
+  <a href="#addArtifactModal" role="button" class="btn" data-toggle="modal">Add</a>
   &nbsp;<a href="#upload" class="btn">Upload</a>
   &nbsp;<a href="@{ArtifactsController.deleteLocalArtifacts()}" class="btn btn-danger">Delete locals</a>
 </div>
@@ -42,27 +42,6 @@ No artifacts
 </div>
 #{/else}
 
-<div class="row" id="add">
-	<div class="span2">&nbsp;</div>
-	<div class="span8 well">
-	  	<legend>Add a new Artifact URL</legend>
-	    <form accept-charset="UTF-8" action="@{ArtifactsController.doRepositoryCreate()}" method="post">
-		    <label>Name</label>
-	        <input class="span6" name="name" placeholder="Name" value="${params?.name}${flash?.name}" type="text"> 
-		    <label>URL</label>
-	        <input class="span6" name="url" placeholder="URL" value="${params?.url}${flash?.url}" type="text"> 
-		    <label>Version</label>
-	        <input class="span6" name="version" placeholder="Version" value="${params?.version}${flash?.version}" type="text"> 
-	        <div class="row">
-	        	<div class="span8">
-	        		<button class="btn btn-primary" type="submit">Add</button>
-	    		</div>
-	    	</div>
-	    </form>
-	</div>
-	<div class="span2">&nbsp;</div>
-</div>
-
 <div class="row" id="upload">
 	<div class="span2">&nbsp;</div>
 	<div class="span8 well">
@@ -83,3 +62,50 @@ No artifacts
 	</div>
 	<div class="span2">&nbsp;</div>
 </div>
+
+<!-- Add artifact modal -->
+<div id="addArtifactModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addArtifactModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="addArtifactModalLabel">Add a new Artifact URL</h3>
+    </div>
+    <div class="modal-body">
+        #{ifErrors}
+        <div class="alert alert-error">
+            <p><strong>Some values are invalid, please fix them...</strong></p>
+            <ul>
+                #{errors}
+                    <li>${error}</li>
+                #{/errors}
+            </ul>
+        </div>
+        #{/ifErrors}
+        <form accept-charset="UTF-8" id="addartifactform" action="@{ArtifactsController.doRepositoryCreate()}" method="post">
+            <label>Name</label>
+            <input class="span6" name="name" placeholder="Name" value="${params?.name}${flash?.name}" type="text">
+            <label>URL</label>
+            <input class="span6" name="url" placeholder="URL" value="${params?.url}${flash?.url}" type="text">
+            <label>Version</label>
+            <input class="span6" name="version" placeholder="Version" value="${params?.version}${flash?.version}" type="text">
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button id="addartifactbutton" class="btn btn-primary" type="submit">Add</button>
+    </div>
+</div>
+
+#{set 'lastScripts'}
+<script>
+    window.onload = function(){
+        #{ifErrors}
+            $('#addArtifactModal').modal('show')
+        #{/ifErrors}
+    }
+
+    $('#addartifactbutton').click(function(){
+        $('#addartifactform').submit();
+    });
+
+</script>
+#{/set}

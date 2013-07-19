@@ -117,11 +117,6 @@ public class ArtifactsController extends PetalsController {
 		render();
 	}
 
-	public static void deploy() {
-		// TODO : Get URLs
-		render();
-	}
-
 	public static void doDeployAndStartArtifact(
 			@Required(message = "URL is required") final String url) {
 
@@ -131,7 +126,7 @@ public class ArtifactsController extends PetalsController {
 		if (validation.hasErrors()) {
 			params.flash();
 			validation.keep();
-			deploy();
+			index();
 		}
 
 		final Node node = getCurrentNode();
