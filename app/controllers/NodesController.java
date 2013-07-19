@@ -25,13 +25,12 @@ import com.google.common.collect.ImmutableSortedSet;
 import models.Node;
 import models.Property;
 import org.ow2.petals.admin.api.ContainerAdministration;
+import org.ow2.petals.jmx.api.api.JMXClient;
 import play.Logger;
 import play.data.validation.Required;
 import play.mvc.Scope.Session;
-import utils.ApplicationEvent;
+import utils.*;
 import utils.Check;
-import utils.Constants;
-import utils.PetalsAdmin;
 
 import java.util.Comparator;
 import java.util.List;
@@ -208,5 +207,23 @@ public class NodesController extends PetalsController {
 		flash.success("Node %s:%s has been registered", host, port);
 		index();
 	}
+
+    /**
+     * Check that the current node is reachable
+     */
+    public static void jsonCheckNode() {
+        if (getCurrentNode() == null) {
+            renderJSON("null");
+        }
+
+        Node node = getCurrentNode();
+        try {
+            JMXClient client = JMXClientManager.get(node);
+            client.getPetalsAdminServiceClient().ping();
+        } catch (Exception e) {
+            renderJSON("down");
+        }
+        renderJSON("up");
+    }
 
 }
