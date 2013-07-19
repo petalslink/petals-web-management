@@ -19,27 +19,24 @@
  */
 package controllers;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-
-import models.BaseEvent;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSortedSet;
 import models.Node;
 import models.Property;
-
 import org.ow2.petals.admin.api.ContainerAdministration;
-
 import play.Logger;
 import play.data.validation.Required;
 import play.mvc.Scope.Session;
+import utils.ApplicationEvent;
 import utils.Check;
 import utils.Constants;
 import utils.PetalsAdmin;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableSortedSet;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author chamerling
@@ -115,8 +112,7 @@ public class NodesController extends PetalsController {
 			Logger.error(e, "Error while trying to connect to node %s", id);
 			index();
 		}
-		newEvent(new BaseEvent(String.format("Connected to node %s : %s:%s",
-				id, node.host, node.port), "info"));
+        ApplicationEvent.info("Connected to node %d : %s:%s", id, node.host, node.port);
 		flash.success("Connected to node %s : %s:%s", id, node.host, node.port);
 		index();
 	}
@@ -171,8 +167,7 @@ public class NodesController extends PetalsController {
 		String node = session.get(Constants.SESSION_CURRENT_NODE);
 		Session.current().remove(Constants.SESSION_CURRENT_NODE);
 		flash.success("Disconnected from node %s", node);
-		newEvent(new BaseEvent(
-				String.format("Disconnected from node %s", node), "info"));
+        ApplicationEvent.info("Disconnected from node %s", node);
 		index();
 	}
 
@@ -209,8 +204,7 @@ public class NodesController extends PetalsController {
 		node.password = password;
 
 		node.save();
-		newEvent(new BaseEvent(String.format("Node %s:%s has been created",
-				host, port), "info"));
+		ApplicationEvent.info("Node %s:%s has been created", host, port);
 		flash.success("Node %s:%s has been registered", host, port);
 		index();
 	}

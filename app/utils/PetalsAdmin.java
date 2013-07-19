@@ -20,7 +20,6 @@
 package utils;
 
 import models.Node;
-
 import org.ow2.petals.admin.api.ArtifactAdministration;
 import org.ow2.petals.admin.api.ContainerAdministration;
 import org.ow2.petals.admin.api.PetalsAdministrationFactory;
@@ -72,5 +71,4 @@ public class PetalsAdmin {
 		return PetalsAdministrationFactory.newInstance()
 				.newRegistryAdministration();
 	}
-
 }

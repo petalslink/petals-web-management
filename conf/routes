@@ -36,8 +36,22 @@ GET     /endpoints                              EndpointsController.index
 GET     /endpoints/sync                         EndpointsController.synchronize()
 GET     /endpoints/syncall                      EndpointsController.synchronizeAll()
 
-# Websocket
-WS      /websocket/petals                       WebSocket.pushNewMessage
+# Monitoring
+
+GET     /monitoring                                 MonitoringController.index
+GET     /monitoring/subscriptions                   MonitoringController.subscriptions
+GET     /monitoring/subscriptions/{id}/unsubscribe  MonitoringController.unsubscribe
+GET     /monitoring/clear                           MonitoringController.clearAll
+GET     /monitoring/readall                         MonitoringController.markAllAsRead
+GET     /monitoring/json/unread                     MonitoringController.jsonUnreadAlerts
+GET     /monitoring/json/fake/add                   MonitoringController.addFakeAlert
+GET     /monitoring/json/fake/subscription/add      MonitoringController.addFakeSubscription
+
+# Send alerts to the client using Web socket channel
+WS      /monitoring/websocket/newAlert              AlertWebSocket.newAlert
+
+# Websockets
+WS      /websocket/message                          WebSocket.newMessage
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

@@ -18,16 +18,16 @@
  *
  */
 
+import controllers.WebSocket;
 import models.Message;
 import play.jobs.Every;
 import play.jobs.Job;
-import controllers.WebSocket;
 
 /**
  * @author chamerling
  *
  */
-@Every("30s")
+@Every("3000s")
 public class BackgroundJob extends Job {
 
 	public void doJob() throws Exception {

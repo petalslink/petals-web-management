@@ -19,26 +19,14 @@
  */
 package controllers;
 
-import static utils.Constants.EVENT_INFO;
-import static utils.Constants.EVENT_WARNING;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Sets;
 import models.ArtifactURL;
-import models.BaseEvent;
 import models.Node;
 import models.Property;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.ow2.petals.admin.api.artifact.Artifact;
@@ -46,21 +34,22 @@ import org.ow2.petals.admin.api.artifact.Component;
 import org.ow2.petals.admin.api.artifact.Component.ComponentType;
 import org.ow2.petals.admin.api.artifact.ServiceAssembly;
 import org.ow2.petals.admin.api.artifact.SharedLibrary;
-
 import play.Logger;
 import play.Play;
 import play.data.validation.Required;
 import play.jobs.Job;
 import play.libs.Files;
+import utils.ApplicationEvent;
 import utils.Check;
 import utils.Constants;
 import utils.PetalsAdmin;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Sets;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
 
 /**
  * @author chamerling
@@ -153,16 +142,10 @@ public class ArtifactsController extends PetalsController {
 					PetalsAdmin.getArtifactAdministration(node)
 							.deployAndStartArtifact(new URL(url));
 
-					PetalsController.bus().post(
-							new BaseEvent(String.format(
-									"Artifact deployed and started from %s",
-									url), EVENT_INFO));
+					ApplicationEvent.info("Artifact deployed and started from %s", url);
 				} catch (Exception e) {
 					e.printStackTrace();
-					PetalsController.bus().post(
-							new BaseEvent(String.format(
-									"Error while deploying artifact %s : %s",
-									url, e.getMessage()), "warning"));
+                    ApplicationEvent.warning("Error while deploying artifact %s : %s", url, e.getMessage());
 				}
 			}
 		}.in(2); // delay...
@@ -182,18 +165,12 @@ public class ArtifactsController extends PetalsController {
 					PetalsAdmin.getArtifactAdministration(node)
 							.stopAndUndeployArtifact(type, name);
 
-					PetalsController
-							.bus()
-							.post(new BaseEvent(
-									String.format(
-											"Artifact %s stopped and undeployed",
-											name), "info"));
-				} catch (Exception e) {
+                    ApplicationEvent.info("Artifact stopped and undeployed %s", name);
+
+                } catch (Exception e) {
 					e.printStackTrace();
-					PetalsController.bus().post(
-							new BaseEvent(String.format(
-									"Error while undeploying artifact %s : %s",
-									name, e.getMessage()), "warning"));
+                    ApplicationEvent.warning("Error while undeploying artifact %s : %s",
+									name, e.getMessage());
 				}
 			}
 		}.in(2); // delay...
@@ -312,16 +289,10 @@ public class ArtifactsController extends PetalsController {
 							.deployAndStartArtifact(
 									new URL(getArtifactURL(artifact)));
 
-					PetalsController.bus().post(
-							new BaseEvent(String.format(
-									"Artifact %s deployed and started",
-									artifact.name), "info"));
+                    ApplicationEvent.info("Artifact %s deployed and started", artifact.name);
 				} catch (Exception e) {
 					e.printStackTrace();
-					PetalsController.bus().post(
-							new BaseEvent(String.format(
-									"Error while deploying artifact %s : %s",
-									artifact.name, e.getMessage()), "warning"));
+                    ApplicationEvent.warning("Error while deploying artifact %s : %s", artifact.name, e.getMessage());
 				}
 			}
 		}.in(2); // delay...
@@ -349,8 +320,7 @@ public class ArtifactsController extends PetalsController {
 		a.url = url;
 		a.save();
 
-		newEvent(new BaseEvent(String.format("Artifact %s has been created",
-				name), "info"));
+        ApplicationEvent.info("Artifact %s has been created", name);
 		flash.success("Artifact %s has been registered", name);
 		repository();
 	}
@@ -376,15 +346,14 @@ public class ArtifactsController extends PetalsController {
 			IOUtils.copy(is, new FileOutputStream(out));
 		} catch (IOException e) {
 			e.printStackTrace();
-			event(EVENT_WARNING, "Can not copy file to local folder %s",
-					e.getMessage());
+            ApplicationEvent.warning("Can not copy file to local folder %s", e.getMessage());
 			flash.error("Can not copy file to local folder : %s",
 					e.getMessage());
 			repository();
 		}
 
 		// when copied, store the artifact in the database
-		event(EVENT_INFO, "Artifact %s uploaded into repository", name);
+        ApplicationEvent.info("Artifact %s uploaded into repository", name);
 		ArtifactURL artifact = new ArtifactURL();
 		artifact.date = new Date();
 		artifact.name = name;
