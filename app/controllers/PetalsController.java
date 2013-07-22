@@ -34,16 +34,16 @@ public class PetalsController extends Controller {
 
 	@Before()
 	private static void currentNode() {
-		Logger.info("Getting current node");
+		Logger.debug("Getting current node");
 		String currentNode = session.get(Constants.SESSION_CURRENT_NODE);
 		if (currentNode != null) {
 			// TODO : Get from cache if available...
 
 			renderArgs.put(Constants.SESSION_CURRENT_NODE,
 					Node.findById(Long.parseLong(currentNode)));
-			Logger.info("Got it!");
+			Logger.debug("Got it!");
 		} else {
-			Logger.info("Can not get node from session");
+			Logger.debug("Can not get node from session");
 		}
 	}
 
