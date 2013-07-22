@@ -22,8 +22,11 @@ package controllers;
 import models.Alert;
 import models.Node;
 import models.Subscription;
+import monitoring.DefaultAlertListener;
 import monitoring.MonitoringException;
 import monitoring.MonitoringManager;
+import play.Logger;
+import play.data.validation.Required;
 import play.jobs.Job;
 import utils.ApplicationEvent;
 
@@ -54,12 +57,30 @@ public class MonitoringController extends PetalsController {
     }
 
     /**
-     * Subscribe to 'real time' notifications
+     * Subscribe to 'real time' notifications. User needs to be connected to the node to subscribe.
      *
      * @param component
-     * @param container
      */
-    public static void subscribe(String component, String container) {
+    public static void subscribe(@Required(message = "Component is required") String component) {
+        Node node = getCurrentNode();
+
+        validation.required(component);
+        if (validation.hasErrors()) {
+            params.flash();
+            validation.keep();
+            subscriptions();
+        }
+
+        try {
+            Subscription subscription = MonitoringManager.subscribe(node, component, new DefaultAlertListener());
+            flash.success("Subscribed to component %s (id=%s)", component, "" + subscription.getId());
+        } catch (Exception e) {
+            final String message = e.getMessage();
+            Logger.error(e, "Error while subscribing to component %s : %s", component, message);
+            flash.error("Error while subscribing to component %s : %s", component, message);
+            subscriptions();
+        }
+
         subscriptions();
     }
 

@@ -31,7 +31,7 @@
 	        #{list components, as : 'component'}
 	          <tr>
 	          	<td align="left"><a href="@{ArtifactsController.component(component.name, component.type)}">${component.name}</a></td>
-	            <td><span class="label">${component.state.toString().toLowerCase().capFirst()}</span></td>
+	            <td><span class="label label-info">${component.state.toString().toLowerCase().capFirst()}</span></td>
 	            <td>${component.type}</td>
 	            <td>
 					<a href="@{ArtifactsController.component(component.name, component.type)}" class="btn">Details</a>
@@ -63,7 +63,7 @@
 	        #{list sas, as : 'sa'}
 	          <tr>
 	          	<td align="left"><a href="@{ArtifactsController.sa(sa.name)}">${sa.name}</a></td>
-	            <td><span class="label">${sa.state.toString().toLowerCase().capFirst()}</span></td>
+	            <td><span class="label label-info">${sa.state.toString().toLowerCase().capFirst()}</span></td>
 	            <td>
 					<a href="@{ArtifactsController.sa(sa.name)}" class="btn">Details</a>
 					&nbsp;

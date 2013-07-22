@@ -7,20 +7,31 @@
   <li class="active">${component?.name}</li>
 </ul>
 
+<div class="alert alert-info alert-block">
+    <h4>Status</h4>
+    <b>${component.name}</b> is currently <span class="label label-info">${component.state.toString().toLowerCase().capFirst()}</span>
+</div>
+
 <div class="well">
-	<p>
-		${component.name} is currently <span class="label">${component.state.toString().toLowerCase().capFirst()}</span>
-	</p>
 	<div class="btn-group">
 	  <a class="btn dropdown-toggle btn-danger" data-toggle="dropdown" href="#">
 	    Manage
 	    <span class="caret"></span>
 	  </a>
 	  <ul class="dropdown-menu">
-	    <li><a href="#">Stop</a></li>
-	    <li><a href="#">Undeploy</a></li>
-	  </ul>
+        <li><a href="#">Stop</a></li>
+        <li><a href="#">Undeploy</a></li>
+    </ul>
 	</div>
+    <div class="btn-group">
+        <a class="btn dropdown-toggle btn-info" data-toggle="dropdown" href="#">
+            Monitoring
+            <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href="@{MonitoringController.subscribe(component.name)}">Subscribe</a></li>
+        </ul>
+    </div>
 </div>
 
 <div id="properties">
@@ -40,7 +51,7 @@
 	         <td align="left"><b>${property.name}</b></td>
 	           <td>${property.value}</td>
 	           <td>
-				<a href="#" class="btn btn-danger">Edit</a>
+				<a href="#" class="btn btn-danger disabled">Edit</a>
 	           </td>
 	         </tr>
 	       #{/list}

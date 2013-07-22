@@ -25,6 +25,7 @@ import models.Subscription;
 import org.ow2.petals.jmx.api.api.monitoring.Defect;
 import org.ow2.petals.jmx.api.api.monitoring.DefectListener;
 import play.Logger;
+import utils.ApplicationEvent;
 import utils.JMXClientManager;
 
 import java.util.Date;
@@ -55,7 +56,7 @@ public class MonitoringManager {
             JMXClientManager.get(node).subscribeToComponentMonitoringService(component, new DefectListener() {
                 @Override
                 public void onDefect(Defect defect) {
-                    Logger.info("Got a defect!");
+                    Logger.info("Got a defect from component %s!", component);
 
                     Alert a = new Alert();
                     a.message = defect.getMessage();
@@ -75,8 +76,11 @@ public class MonitoringManager {
                 }
             }, null);
         } catch (Exception e) {
+            ApplicationEvent.warning("Can not subscribe to component %s", component);
             throw new MonitoringException("Problem while subscribing", e);
         }
+
+        ApplicationEvent.info("Subscribed to component %s", component);
 
         result = new Subscription();
         result.date = new Date();
@@ -108,5 +112,6 @@ public class MonitoringManager {
         subscription.status = "Inactive";
         subscription.unsubscribedAt = new Date();
         //subscription.save();
+        // TODO : Update
     }
 }
