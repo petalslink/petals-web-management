@@ -23,6 +23,7 @@ import play.db.jpa.Model;
 
 import javax.persistence.Entity;
 import java.util.Date;
+import java.util.List;
 
 /**
  * A monitoring/alarm subscription
@@ -38,9 +39,13 @@ public class Subscription extends Model {
     public String component;
 
     /**
-     * TODO : JPA; For now we keep the models unlinked since we do not want to remove subscriptions when removing nodes...
+     * Remote node properties.
+     * Do not want to link Node since we may want to have 'unlinked' registrations...
      */
-    public Node node;
+    public String host;
+    public int port;
+    public String login;
+    public String password;
 
     /**
      * Subscription date
@@ -56,5 +61,35 @@ public class Subscription extends Model {
      *
      */
     public Date unsubscribedAt;
+
+    /**
+     * Get all the subscription for a component
+     *
+     * @param component
+     * @return
+     */
+    public static List<Subscription> subscriptions(String component) {
+        return Subscription.find("component like ?", component).fetch();
+    }
+
+    /**
+     * Get all subscriptions for a component and a node
+     *
+     * @param component
+     * @return
+     */
+    public static List<Subscription> subscriptions(String component, Node node) {
+        return Subscription.find("component like ? and host like ? and port like ?", component, node.host, node.port).fetch();
+    }
+
+    /**
+     * Subscriptions for a given node
+     *
+     * @param node
+     * @return
+     */
+    public static List<Subscription> subscriptions(Node node) {
+        return Subscription.find("host like ? and port like ?", node.host, node.port).fetch();
+    }
 
 }

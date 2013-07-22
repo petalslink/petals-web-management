@@ -49,10 +49,10 @@ public class MonitoringController extends PetalsController {
     }
 
     /**
-     *
+     * Get the current node subscriptions
      */
     public static void subscriptions() {
-        List<Subscription> subscriptions = Subscription.find("order by date desc").fetch();
+        List<Subscription> subscriptions = Subscription.subscriptions(getCurrentNode());
         render(subscriptions);
     }
 
@@ -106,12 +106,12 @@ public class MonitoringController extends PetalsController {
                     MonitoringManager.unsubscribe(s);
                     ApplicationEvent.live("Unsubcribed from %s", s.component);
                 } catch (MonitoringException e) {
-                    ApplicationEvent.warning("Error while unsubscribing from %s@%s", s.component, s.node.host);
+                    ApplicationEvent.warning("Error while unsubscribing from %s@%s:%s", s.component, s.host, "" + s.port);
                 }
             }
         }.now();
 
-        flash.success("Unsubscribing from %s@%s...", s.component, s.node.host);
+        flash.success("Unsubscribing from %s@%s:%s...", s.component, s.host, "" + s.port);
         subscriptions();
     }
 
@@ -121,29 +121,8 @@ public class MonitoringController extends PetalsController {
      * @param id
      */
     public static void delete(Long id) {
-        Subscription.delete("byId", id);
-
-        final Subscription s = Subscription.findById(id);
-        if (s == null) {
-            flash.error("Can not find subscription");
-            subscriptions();
-        }
-
-        // let's do it async...
-        new Job() {
-            @Override
-            public void doJob() throws Exception {
-                Thread.sleep(3000);
-                try {
-                    MonitoringManager.unsubscribe(s);
-                    ApplicationEvent.live("Unsubcribed from %s", s.component);
-                } catch (MonitoringException e) {
-                    ApplicationEvent.warning("Error while unsubscribing from %s@%s", s.component, s.node.host);
-                }
-            }
-        }.now();
-
-        flash.success("Unsubscribing from %s@%s...", s.component, s.node.host);
+        Subscription.delete("id", id);
+        flash.success("Subscription removed");
         subscriptions();
     }
 
@@ -169,16 +148,14 @@ public class MonitoringController extends PetalsController {
      */
     public static void addFakeSubscription() {
         Subscription s = new Subscription();
-        Node node = new Node();
-        node.host = "localhost";
-        node.port = 88976;
 
         s.date = new Date();
         s.component = "petals-bc-soap";
-        s.node = node;
+        s.host = "localhost";
+        s.port = 7700;
         s.status = "Active";
         s = s.save();
-        ApplicationEvent.info("New subscription to %s@%s", s.component, s.node.host);
+        ApplicationEvent.info("New subscription to %s@%s:%s", s.component, s.host, "" + s.port);
 
         renderJSON(s);
     }

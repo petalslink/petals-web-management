@@ -27,6 +27,7 @@ import com.google.common.collect.Sets;
 import models.ArtifactURL;
 import models.Node;
 import models.Property;
+import models.Subscription;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.ow2.petals.admin.api.artifact.Artifact;
@@ -199,7 +200,8 @@ public class ArtifactsController extends PetalsController {
 									}
 								})).build();
 
-				render(component, properties);
+                List<Subscription> subscriptions = Subscription.subscriptions(name, getCurrentNode());
+				render(component, properties, subscriptions);
 			} else {
 				flash.error("No such component");
 				index();

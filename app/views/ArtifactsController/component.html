@@ -35,28 +35,56 @@
 </div>
 
 <div id="properties">
-	#{if properties}
-	<h4>Properties</h4>
-	<table class="table table-striped">
-	       <thead>
-	         <tr>
-	           <th>Name</th>
-	           <th>Value</th>
-	           <th>Actions</th>
-	         </tr>
-	       </thead>
-	       <tbody>
-	       #{list properties, as : 'property'}
-	         <tr>
-	         <td align="left"><b>${property.name}</b></td>
-	           <td>${property.value}</td>
-	           <td>
-				<a href="#" class="btn btn-danger disabled">Edit</a>
-	           </td>
-	         </tr>
-	       #{/list}
-	       </tbody>
-	</table>
-	#{/if}
+#{if properties}
+    <h4>Properties</h4>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            #{list properties, as : 'property'}
+            <tr>
+                <td align="left"><b>${property.name}</b></td>
+                <td>${property.value}</td>
+                <td>
+                    <a href="#" class="btn btn-danger disabled">Edit</a>
+                </td>
+            </tr>
+            #{/list}
+        </tbody>
+    </table>
+#{/if}
+</div>
+
+<div id="subscriptions">
+#{if subscriptions}
+    <h4>Subscriptions</h4>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>State</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            #{list subscriptions, as : 'subscription'}
+            <tr>
+                <td align="left"><b>${subscription.id}</b></td>
+                <td>${subscription.date}</td>
+                <td>${subscription.status}</td>
+                <td>
+                    <a href="#" class="btn btn-danger disabled">Unsubscribe</a>
+                </td>
+            </tr>
+            #{/list}
+        </tbody>
+    </table>
+#{/if}
 </div>
 

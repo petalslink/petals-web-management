@@ -44,6 +44,7 @@ GET     /endpoints/syncall                      EndpointsController.synchronizeA
 GET     /monitoring                                 MonitoringController.index
 GET     /monitoring/subscriptions                   MonitoringController.subscriptions
 GET     /monitoring/subscriptions/{id}/unsubscribe  MonitoringController.unsubscribe
+GET     /monitoring/subscriptions/{id}/delete       MonitoringController.delete
 GET     /monitoring/clear                           MonitoringController.clearAll
 GET     /monitoring/readall                         MonitoringController.markAllAsRead
 GET     /monitoring/json/unread                     MonitoringController.jsonUnreadAlerts

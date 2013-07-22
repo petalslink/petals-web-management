@@ -76,7 +76,7 @@ public class MonitoringManager {
                 }
             }, null);
         } catch (Exception e) {
-            ApplicationEvent.warning("Can not subscribe to component %s", component);
+            ApplicationEvent.warning("Can not subscribe to component %s@%s:%s", component, node.host, "" + node.port);
             throw new MonitoringException("Problem while subscribing", e);
         }
 
@@ -85,7 +85,10 @@ public class MonitoringManager {
         result = new Subscription();
         result.date = new Date();
         result.component = component;
-        result.node = node;
+        result.host = node.host;
+        result.port = node.port;
+        result.login = node.login;
+        result.password = node.password;
         result.status = "Active";
         result = result.save();
         return result;
@@ -96,12 +99,18 @@ public class MonitoringManager {
      */
     public static void unsubscribe(Subscription subscription) throws MonitoringException {
 
-        if (subscription == null || subscription.node == null || subscription.component == null) {
+        if (subscription == null || subscription.component == null) {
             throw new MonitoringException("Can not unsubscribe from null subscription");
         }
 
+        Node node = new Node();
+        node.host = subscription.host;
+        node.port = subscription.port;
+        node.login = subscription.login;
+        node.password = subscription.password;
+
         try {
-            JMXClientManager.get(subscription.node).unsubscribeToComponentMonitoringService(subscription.component);
+            JMXClientManager.get(node).unsubscribeToComponentMonitoringService(subscription.component);
         } catch (Exception e) {
             subscription.status = "Error";
             //subscription.save();
@@ -111,7 +120,6 @@ public class MonitoringManager {
         // update the subscription status
         subscription.status = "Inactive";
         subscription.unsubscribedAt = new Date();
-        //subscription.save();
-        // TODO : Update
+        subscription.save();
     }
 }
