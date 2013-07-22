@@ -19,50 +19,27 @@
  */
 package utils;
 
-import com.google.common.cache.*;
 import models.Node;
 import org.ow2.petals.admin.jmx.JMXClientConnection;
 import org.ow2.petals.jmx.api.api.JMXClient;
-import play.Logger;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Christophe Hamerling - chamerling@linagora.com
  */
 public class JMXClientManager {
 
-    private static LoadingCache<Node, JMXClient> clients = CacheBuilder.newBuilder()
-            .maximumSize(1000).expireAfterAccess(60, TimeUnit.SECONDS).removalListener(new RemovalListener<Node, JMXClient>() {
-                @Override
-                public void onRemoval(RemovalNotification<Node, JMXClient> objectObjectRemovalNotification) {
-                    Logger.info("JMXClient removed from cache : %s", objectObjectRemovalNotification.getKey().toString());
-                }
-            })
-            .build(
-                    new CacheLoader<Node, JMXClient>() {
-                        public JMXClient load(Node node) throws Exception {
-                            return JMXClientConnection.createJMXClient(node.host, node.port, node.login, node.password);
-                        }
-                    });
-
     private JMXClientManager() {
     }
 
     /**
-     * Get a JMXClient from the client cache. Up to guava to instanciate it if needed.
+     * Instanciate a new client.
+     * Put them in cache is not allowed since connections may be closed by the JMX server or client without any easy way to detect.
      *
      * @param node
      * @return
      * @throws Exception
      */
     public static JMXClient get(Node node) throws Exception {
-        try {
-            return clients.get(node);
-        } catch (ExecutionException e) {
-            Logger.warn(e.getMessage());
-            throw new Exception("Can not et JMX client", e);
-        }
+        return JMXClientConnection.createJMXClient(node.host, node.port, node.login, node.password);
     }
 }
