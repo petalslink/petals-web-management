@@ -21,6 +21,7 @@ package monitoring;
 
 import controllers.AlertWebSocket;
 import models.Alert;
+import play.Logger;
 import utils.ApplicationEvent;
 
 /**
@@ -32,12 +33,14 @@ public class DefaultAlertListener implements AlertListener {
 
     @Override
     public void handle(Alert alert) {
+        Logger.debug("Handle alert");
         if (alert == null) {
             return;
         }
 
-        if (!alert.isPersistent()) {
+        try {
             alert = alert.save();
+        } catch (Exception e) {
         }
         ApplicationEvent.info("New alert has been received : %s", alert.message);
         AlertWebSocket.alertStream.publish(alert);

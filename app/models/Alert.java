@@ -83,4 +83,15 @@ public class Alert extends Model {
         return count("read = false");
     }
 
+    @Override
+    public String toString() {
+        return "Alert{" +
+                "read=" + read +
+                ", receivedAt=" + receivedAt +
+                ", source='" + source + '\'' +
+                ", message='" + message + '\'' +
+                ", sequenceNb=" + sequenceNb +
+                ", type='" + type + '\'' +
+                '}';
+    }
 }

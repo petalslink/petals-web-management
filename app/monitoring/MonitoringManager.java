@@ -19,12 +19,8 @@
  */
 package monitoring;
 
-import models.Alert;
 import models.Node;
 import models.Subscription;
-import org.ow2.petals.jmx.api.api.monitoring.Defect;
-import org.ow2.petals.jmx.api.api.monitoring.DefectListener;
-import play.Logger;
 import utils.ApplicationEvent;
 import utils.JMXClientManager;
 
@@ -53,28 +49,7 @@ public class MonitoringManager {
         }
 
         try {
-            JMXClientManager.get(node).subscribeToComponentMonitoringService(component, new DefectListener() {
-                @Override
-                public void onDefect(Defect defect) {
-                    Logger.info("Got a defect from component %s!", component);
-
-                    Alert a = new Alert();
-                    a.message = defect.getMessage();
-                    a.source = defect.getEmitter();
-                    a.type = defect.getType();
-                    a.receivedAt = new Date();
-                    a.sequenceNb = defect.getSequenceNumber();
-                    // TODO : Handle user data... defect.getUserData()
-
-                    if (listener != null) {
-                        try {
-                            listener.handle(a);
-                        } catch (MonitoringException e) {
-                            Logger.warn("Handler error", e.getMessage());
-                        }
-                    }
-                }
-            }, null);
+            JMXClientManager.get(node).subscribeToComponentMonitoringService(component, new monitoring.DefectListener(component, listener), null);
         } catch (Exception e) {
             ApplicationEvent.warning("Can not subscribe to component %s@%s:%s", component, node.host, "" + node.port);
             throw new MonitoringException("Problem while subscribing", e);
