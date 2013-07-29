@@ -21,6 +21,7 @@ package controllers;
 
 import com.google.gson.Gson;
 import models.Alert;
+import play.Logger;
 import play.libs.F;
 import play.mvc.WebSocketController;
 
@@ -56,7 +57,7 @@ public class AlertWebSocket extends WebSocketController {
                 try {
                     outbound.send(json);
                 } catch (java.lang.IllegalStateException e) {
-                    // NOP
+                    Logger.debug("Websocket error", e);
                 }
             }
         }

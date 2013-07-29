@@ -21,6 +21,7 @@ package controllers;
 
 import com.google.gson.Gson;
 import models.Message;
+import play.Logger;
 import play.libs.F.EventStream;
 import play.mvc.WebSocketController;
 
@@ -37,7 +38,11 @@ public class WebSocket extends WebSocketController {
 			Message message = await(liveStream.nextEvent());
 			if (message != null) {
 				String json = new Gson().toJson(message);
-				outbound.send(json);
+                try {
+				    outbound.send(json);
+                } catch (IllegalStateException e) {
+                    Logger.debug("Websocket error", e);
+                }
 			}
 		}
 	}
