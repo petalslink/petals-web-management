@@ -161,17 +161,17 @@ public class ArtifactsController extends PetalsController {
 					PetalsAdmin.getArtifactAdministration(node)
 							.stopAndUndeployArtifact(type, name);
 
-                    ApplicationEvent.info("Artifact stopped and undeployed %s", name);
+                    ApplicationEvent.info("Artifact '%s' stopped and undeployed", name);
 
                 } catch (Exception e) {
 					e.printStackTrace();
-                    ApplicationEvent.warning("Error while undeploying artifact %s : %s",
+                    ApplicationEvent.warning("Error while undeploying artifact '%s' : %s",
 									name, e.getMessage());
 				}
 			}
 		}.in(2); // delay...
 
-		flash.success("Artifact %s stopped and undeployed in the background",
+		flash.success("Stopping and undeploying artifact %s",
 				name);
 		index();
 	}
