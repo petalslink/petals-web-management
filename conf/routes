@@ -7,6 +7,7 @@
 
 # Home page
 GET     /                                       Application.index
+GET     /events/clear                           Application.clearEvents
 
 GET     /nodes                             		NodesController.index
 GET     /nodes/disconnect                		NodesController.disconnect

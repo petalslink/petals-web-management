@@ -34,4 +34,12 @@ public class Application extends PetalsController {
 		render(events);
 	}
 
+    /**
+     * Clear all the events from the index page
+     */
+    public static void clearEvents() {
+        BaseEvent.deleteAll();
+        index();
+    }
+
 }

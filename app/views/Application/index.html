@@ -5,6 +5,18 @@
   <li class="active">Activity</li>
 </ul>
 
+<div class="well well-small">
+    <div class="btn-group">
+        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+            Actions
+            <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href="@{Application.clearEvents()}">Clear all</a></li>
+        </ul>
+    </div>
+</div>
+
 #{if events}
 	#{list events, as : 'event'}
 	<div class="media">
