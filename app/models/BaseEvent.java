@@ -23,6 +23,7 @@ import play.db.jpa.Model;
 
 import javax.persistence.Entity;
 import javax.persistence.PostPersist;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class BaseEvent extends Model {
 
 	public Date date;
 
+    @Size(max=1024)
 	public String message;
 
 	public String type;
