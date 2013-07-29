@@ -87,14 +87,7 @@ public class MonitoringManager {
         try {
             JMXClientManager.get(node).unsubscribeToComponentMonitoringService(subscription.component);
         } catch (Exception e) {
-            subscription.status = "Error";
-            //subscription.save();
             throw new MonitoringException(e);
         }
-
-        // update the subscription status
-        subscription.status = "Inactive";
-        subscription.unsubscribedAt = new Date();
-        subscription.save();
     }
 }

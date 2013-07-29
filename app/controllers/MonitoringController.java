@@ -91,27 +91,27 @@ public class MonitoringController extends PetalsController {
      */
     public static void unsubscribe(Long id) {
 
-        final Subscription s = Subscription.findById(id);
+        Subscription s = Subscription.findById(id);
         if (s == null) {
             flash.error("Can not find subscription");
             subscriptions();
         }
+        final Subscription unsubscribed = s.delete();
 
         // let's do it async...
         new Job() {
             @Override
             public void doJob() throws Exception {
-                Thread.sleep(3000);
                 try {
-                    MonitoringManager.unsubscribe(s);
-                    ApplicationEvent.live("Unsubcribed from %s", s.component);
+                    MonitoringManager.unsubscribe(unsubscribed);
+                    ApplicationEvent.live("Unsubcribed from %s", unsubscribed.component);
                 } catch (MonitoringException e) {
-                    ApplicationEvent.warning("Error while unsubscribing from %s@%s:%s", s.component, s.host, "" + s.port);
+                    ApplicationEvent.warning("Error while unsubscribing from %s@%s:%s", unsubscribed.component, unsubscribed.host, "" + unsubscribed.port);
                 }
             }
         }.now();
 
-        flash.success("Unsubscribing from %s@%s:%s...", s.component, s.host, "" + s.port);
+        flash.success("Unsubscribing from %s@%s:%s...", unsubscribed.component, unsubscribed.host, "" + unsubscribed.port);
         subscriptions();
     }
 
