@@ -192,51 +192,27 @@
 
 			var d = $.parseJSON(evt.data);
 			var unique_id = $.gritter.add({
-			    // (string | mandatory) the heading of the notification
 			    title: d.title,
-			    // (string | mandatory) the text inside the notification
 			    text: d.content,
-			    // (string | optional) the image to display on the left
-			    //image: 'http://s3.amazonaws.com/twitter_production/profile_images/132499022/myface_bigger.jpg',
-			    // (bool | optional) if you want it to fade out on its own or just sit there
 			    sticky: false,
-			    // (int | optional) the time you want it to be alive for before fading out
-			    time: '2000',
-			    // (string | optional) the class name you want to apply to that specific message
-			    class_name: 'my-sticky-class'
+			    time: '2000'
 			  });
 		};
 
 		conn.onclose = function(evt) {
 			var unique_id = $.gritter.add({
-			    // (string | mandatory) the heading of the notification
 			    title: 'Websocket status',
-			    // (string | mandatory) the text inside the notification
 			    text: 'Closed!',
-			    // (string | optional) the image to display on the left
-			    //image: 'http://s3.amazonaws.com/twitter_production/profile_images/132499022/myface_bigger.jpg',
-			    // (bool | optional) if you want it to fade out on its own or just sit there
 			    sticky: false,
-			    // (int | optional) the time you want it to be alive for before fading out
-			    time: '1000',
-			    // (string | optional) the class name you want to apply to that specific message
-			    class_name: 'my-sticky-class'
+			    time: '1000'
 			  });
 		};
 	} else {
 		var unique_id = $.gritter.add({
-		    // (string | mandatory) the heading of the notification
 		    title: 'Websocket status',
-		    // (string | mandatory) the text inside the notification
 		    text: 'Browser does not support WebSockets!',
-		    // (string | optional) the image to display on the left
-		    //image: 'http://s3.amazonaws.com/twitter_production/profile_images/132499022/myface_bigger.jpg',
-		    // (bool | optional) if you want it to fade out on its own or just sit there
 		    sticky: false,
-		    // (int | optional) the time you want it to be alive for before fading out
-		    time: '1000',
-		    // (string | optional) the class name you want to apply to that specific message
-		    class_name: 'my-sticky-class'
+		    time: '1000'
 		  });
 	}
     </script>
