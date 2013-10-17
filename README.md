@@ -4,7 +4,7 @@ Management Web console for OW2-Petals ESB ([http://petals.ow2.org](http://petals
 
 ## Install & Run
 
-Download PlayFramework >= v1.2.4 at [http://www.playframework.com/download](http://www.playframework.com/download "Download Play Framework"), add it to your path and then:
+Download PlayFramework >= v1.2.5 at [http://www.playframework.com/download](http://www.playframework.com/download "Download Play Framework"), add it to your path and then:
 
     git clone https://github.com/petalslink/petals-web-management.git
     cd petals-web-management
