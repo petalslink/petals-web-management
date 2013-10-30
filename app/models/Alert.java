@@ -19,10 +19,10 @@
  */
 package models;
 
-import play.db.jpa.JPA;
-import play.db.jpa.Model;
+import play.db.ebean.Model;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +31,9 @@ import java.util.List;
  */
 @Entity
 public class Alert extends Model {
+
+    @Id
+    public Long id;
 
     /**
      * Alert has been read?
@@ -62,15 +65,20 @@ public class Alert extends Model {
      */
     public String type;
 
+    public static Finder<String,Alert> find = new Finder<String,Alert>(
+            String.class, Alert.class
+    );
+
     /**
      * Get the unread alerts ordered by date
      */
     public static List<Alert> unread() {
-        return find("read is false order by receivedAt desc").fetch();
+        return find.where().ieq("read", "false").orderBy("receivedAt desc").findList();
     }
 
     public static void readAll() {
-        JPA.em().createQuery("Update Alert set read = true").executeUpdate();
+        //JPA.em().createQuery("Update Alert set read = true").executeUpdate();
+        // TODO
         return;
     }
 
@@ -80,7 +88,11 @@ public class Alert extends Model {
      * @return
      */
     public static long unreadCount() {
-        return count("read = false");
+        return find.where().ieq("read", "false").findRowCount();
+    }
+
+    public static void deleteAll() {
+        //TODO
     }
 
     @Override

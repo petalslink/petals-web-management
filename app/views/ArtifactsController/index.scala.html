@@ -1,0 +1,148 @@
+@(components: List[org.ow2.petals.admin.api.artifact.Component], sas: List[org.ow2.petals.admin.api.artifact.ServiceAssembly], sls: List[org.ow2.petals.admin.api.artifact.SharedLibrary], form: Form[forms.DeployArtifact])
+
+@moreScripts = {
+    <script>
+    $('#deploybutton').click(function(){
+        $('#deployform').submit();
+    });
+    </script>
+}
+
+@main("Artifacts", moreScripts) {
+
+<ul class="breadcrumb">
+  <li><a href="@routes.Application.index">Home</a> <span class="divider">/</span></li>
+  <li class="active">Artifacts</li>
+</ul>
+
+<div class="well">
+    <a href="#deployModal" role="button" class="btn" data-toggle="modal">Deploy</a>
+</div>
+
+<div class="tabbable"> <!-- Only required for left/right tabs -->
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#components" data-toggle="tab">Components</a></li>
+    <li><a href="#sas" data-toggle="tab">Service Assemblies</a></li>
+    <li><a href="#sls" data-toggle="tab">Shared Libraries</a></li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane active" id="components">
+    	@if(components != null) {
+		<table class="table table-striped">
+	        <thead>
+	          <tr>
+	            <th>Name</th>
+	            <th>State</th>
+	            <th>Type</th>
+	            <th>Actions</th>
+	          </tr>
+	        </thead>
+	        <tbody>
+	        @for(component <- components) {
+	          <tr>
+	          	<td align="left"><a href="@routes.ArtifactsController.component(component.getName, component.getType)">@component.getName</a></td>
+	            <td><span class="label label-info">@component.getState</span></td>
+	            <td>@component.getType</td>
+	            <td>
+					<a href="@routes.ArtifactsController.component(component.getName, component.getType)" class="btn">Details</a>
+					&nbsp;
+					<a href="@routes.ArtifactsController.doStopAndUndeployArtifact(component.getName, component.getType)" class="btn btn-danger">Stop & Undeploy</a>
+	            </td>
+	          </tr>
+	        }
+	        </tbody>
+	    </table>
+	    } else {
+		<div class="alert alert-info">
+  		No components
+		</div>
+		}
+    </div>
+    <div class="tab-pane" id="sas">
+    	@if(sas != null) {
+		<table class="table table-striped">
+	        <thead>
+	          <tr>
+	            <th>Name</th>
+	            <th>State</th>
+	            <th>Actions</th>
+	          </tr>
+	        </thead>
+	        <tbody>
+	        @for(sa <- sas) {
+	          <tr>
+	          	<td align="left"><a href="@routes.ArtifactsController.sa(sa.getName)">@sa.getName</a></td>
+	            <td><span class="label label-info">@sa.getState.toString</span></td>
+	            <td>
+					<a href="@routes.ArtifactsController.sa(sa.getName)" class="btn">Details</a>
+					&nbsp;
+					<a href="@routes.ArtifactsController.doStopAndUndeployArtifact(sa.getName, sa.getType)" class="btn btn-danger">Stop & Undeploy</a>
+	            </td>
+	          </tr>
+	        }
+	        </tbody>
+	    </table>
+	    } else {
+		<div class="alert alert-info">
+  		No service assemblies
+		</div>
+		}
+    </div>
+    <div class="tab-pane" id="sls">
+    	@if(sls != null) {
+		<table class="table table-striped">
+	        <thead>
+	          <tr>
+	            <th>Name</th>
+	            <th>Version</th>
+	            <th>Actions</th>
+	          </tr>
+	        </thead>
+	        <tbody>
+	        @for(sl <- sls) {
+	          <tr>
+	          	<td align="left"><a href="@routes.ArtifactsController.sl(sl.getName)">@sl.getName</a></td>
+	            <td>@sl.getVersion</td>
+	            <td>
+					<a href="@routes.ArtifactsController.sl(sl.getName)" class="btn">Details</a>
+					&nbsp;
+					<a href="@routes.ArtifactsController.doStopAndUndeployArtifact(sl.getName, sl.getType)" class="btn btn-danger">Stop & Undeploy</a>
+	            </td>
+	          </tr>
+	        }
+	        </tbody>
+	    </table>
+	    } else {
+		<div class="alert alert-info">
+  		No shared libraries
+		</div>
+		}
+    </div>
+    </div>
+  </div>
+
+<div id="deployModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deployModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="deployModalLabel">Deploy Artifact</h3>
+    </div>
+    <div class="modal-body">
+    @helper.form(routes.ArtifactsController.doDeployAndStartArtifact(), 'id -> "deployform") {
+
+        @if(form.hasGlobalErrors) {
+            <p class="error">
+            @form.globalError.message
+            </p>
+        }
+        <label>URL</label>
+        <input class="span6" name="url" placeholder="Artifact URL" value="@form("url").value" type="text">
+        <span class="help-block">You can also check for artifacts in the <a href="@routes.ArtifactsController.repository()">repository</a></span>
+
+    }
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button id="deploybutton" class="btn btn-primary" type="submit">Add</button>
+    </div>
+</div>
+}

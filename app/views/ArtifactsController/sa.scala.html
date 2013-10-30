@@ -1,0 +1,31 @@
+@(sa: org.ow2.petals.admin.api.artifact.ServiceAssembly)
+
+@main("Service Assemblies") {
+
+    <ul class="breadcrumb">
+      <li><a href="@routes.Application.index()">Home</a> <span class="divider">/</span></li>
+      <li><a href="@routes.ArtifactsController.index">Artifacts</a> <span class="divider">/</span></li>
+      <li><a href="@routes.ArtifactsController.index">Service Assemblies</a> <span class="divider">/</span></li>
+      <li class="active">@sa.getName</li>
+    </ul>
+
+    <div class="well">
+        <p>
+            @sa.getName is currently <span class="label">@sa.getState.toString</span>
+        </p>
+        <div class="btn-group">
+          <a class="btn dropdown-toggle btn-danger" data-toggle="dropdown" href="#">
+            Manage
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+              <li><a href="@routes.ArtifactsController.doStopAndUndeployArtifact(sa.getName, "sa")">Stop and Undeploy</a></li>
+          </ul>
+        </div>
+    </div>
+
+    <div id="sus">
+
+    </div>
+}
+

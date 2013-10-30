@@ -1,0 +1,87 @@
+@(nodes: List[models.Node], form: Form[forms.NodeCreate])
+
+@moreScripts = {
+    <script>
+        $('#addnodebutton').click(function(){
+            $('#addnodeform').submit();
+        });
+    </script>
+}
+
+@main("Nodes", moreScripts) {
+<ul class="breadcrumb">
+  <li><a href="@routes.Application.index()">Home</a> <span class="divider">/</span></li>
+  <li class="active">Nodes</li>
+</ul>
+
+<div class="well">
+    <a href="#addNodeModal" role="button" class="btn" data-toggle="modal">Add</a>
+	<a class="btn" href="@routes.NodesController.syncTopology()">Sync With Topology</a>
+</div>
+
+@if(nodes != null) {
+	<table class="table table-striped">
+        <thead>
+          <tr>
+          	<th>#</th>
+            <th>host:port</th>
+            <th>State</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        @for(node <- nodes) {
+          <tr>
+          <td align="left"><a href="@routes.NodesController.node(node.id)">@node.id</a></td>
+            <td><a href="@routes.NodesController.node(node.id)">@node.host:@node.port</a></td>
+            <td>-</td>
+            <td>
+            	@if(session.get("currentnode") != null && Long.parseLong(session.get("currentnode")) == node.id) {
+				<a href="@routes.ConnectController.disconnect()" class="btn btn-danger">Disconnect</a>
+            	} else {
+            	<a href="@routes.ConnectController.connect(node.id)" class="btn">Connect</a>
+				}
+            </td>
+          </tr>
+        }
+        </tbody>
+      </table>
+} else {
+<div class="alert alert-error">
+  		<button type="button" class="close" data-dismiss="alert">&times;</button>
+  		<h4>Info!</h4>
+  		You do not have any node...
+	</div>
+}
+
+<!-- Add node modal -->
+<div id="addNodeModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addNodeModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="addNodeModalLabel">Add a new Node</h3>
+    </div>
+    <div class="modal-body">
+        @helper.form(routes.NodesController.doCreateNode, 'id -> "addnodeform") {
+
+            @if(form.hasGlobalErrors) {
+                <p class="error">
+                @form.globalError.message
+                </p>
+            }
+            <label>HostName / IP</label>
+            <input class="span5" name="host" placeholder="Hostname" value="@form("hostname").value" type="text">
+            <label>Port</label>
+            <input class="span5" name="port" placeholder="Port" value="@form("port").value" type="text">
+            <label>Login</label>
+            <input class="span5" name="login" placeholder="Login" value="@form("login").value" type="text">
+            <label>Password</label>
+            <input class="span5" name="password" placeholder="Password" value="@form("password").value" type="password">
+        }
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button id="addnodebutton" class="btn btn-primary" type="submit">Add</button>
+    </div>
+</div>
+}
+

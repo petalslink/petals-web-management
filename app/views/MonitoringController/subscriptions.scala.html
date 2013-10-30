@@ -1,0 +1,67 @@
+@(subscriptions: List[models.Subscription])
+
+@main("Subscriptions") {
+    <ul class="breadcrumb">
+      <li><a href="@routes.Application.index()">Home</a> <span class="divider">/</span></li>
+      <li><a href="@routes.MonitoringController.index()">Monitoring</a> <span class="divider">/</span></li>
+      <li class="active">Subscriptions</li>
+    </ul>
+
+    <div class="well well-small">
+        <div class="btn-group">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                Actions
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="@routes.MonitoringController.index()">Unsubscribe all</a></li>
+            </ul>
+        </div>
+    </div>
+
+    @if(subscriptions != null) {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Node</th>
+                    <th>Date</th>
+                    <th>Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for(subscription <- subscriptions) {
+                @if(subscription.status == "Active") {
+                    <tr class="success">
+                } else {
+                    <tr>
+                }
+                <td><a href="@routes.ArtifactsController.component(subscription.component, subscription.componentType)">@subscription.component (@subscription.componentType)</a></td>
+                <td>@subscription.host:@subscription.port</td>
+                <td>@subscription.date</td>
+                <td>@subscription.status</td>
+                <td>
+                    <div class="btn-group">
+                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            Actions
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="@routes.MonitoringController.unsubscribe(subscription.id)">Unsubscribe</a></li>
+                            <li><a href="@routes.MonitoringController.delete(subscription.id)">Force delete</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            }
+            </tbody>
+        </table>
+    } else {
+    <div id="subscription-empty" class="alert alert-info">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <h4>Info</h4>
+        There are no subscriptions for current node. To create some, go to the components page and subscribe.
+    </div>
+    }
+}

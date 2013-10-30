@@ -1,7 +1,7 @@
 /**
  *
  * Copyright (c) 2013, Linagora
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -17,33 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package controllers;
-
-import java.util.List;
-
-import controllers.actions.PetalsNodeSelected;
-import models.BaseEvent;
-import play.mvc.Result;
-import views.html.Application.*;
-
+package controllers.forms;
 
 /**
- * @author chamerling
+ * Deploy a file artifact to the repository
+ *
+ * @author Christophe Hamerling - chamerling@linagora.com
  */
-@PetalsNodeSelected
-public class Application extends PetalsController {
-	
-	public static Result index() {
-		List<BaseEvent> events = BaseEvent.pasts();
-		return ok(index.render(events));
-	}
-
-    /**
-     * Clear all the events from the index page
-     */
-    public static Result clearEvents() {
-        BaseEvent.deleteAll();
-        return index();
-    }
-
+public class DeployArtifactToRepository {
 }

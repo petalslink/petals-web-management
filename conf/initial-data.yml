@@ -1,21 +1,29 @@
-Node(localhost1):
-  host: localhost
-  port: 7700
-  login: petals
-  password: petals
+nodes:
 
-Node(localhost2):
-  host: localhost
-  port: 7701
-  login: petals
-  password: petals
+  - !!models.Node
+    #id: 0
+    host: localhost
+    port: 7700
+    login: petals
+    password: petals
 
-ArtifactURL(petals-bc-soap):
-  name: petals-bc-soap
-  version: 4.0
-  url: http://localhost/foo/bar/petals-bc-soap.zip
+  - !!models.Node
+    #id: 1
+    host: localhost
+    port: 7701
+    login: petals
+    password: petals
 
-ArtifactURL(petals-bc-rest):
-  name: petals-bc-rest
-  version: 1.0
-  url: http://localhost/foo/bar/petals-bc-rest.zip
+urls:
+
+  - !!models.ArtifactURL
+    id: 2
+    name: petals-bc-soap
+    version: 4.0
+    url: http://localhost/foo/bar/petals-bc-soap.zip
+
+  - !!models.ArtifactURL
+    id: 3
+    name: petals-bc-rest
+    version: 1.0
+    url: http://localhost/foo/bar/petals-bc-rest.zip

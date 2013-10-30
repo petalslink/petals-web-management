@@ -7,8 +7,6 @@ import models.ArtifactURL;
 import org.apache.commons.io.FileUtils;
 
 import play.Logger;
-import play.jobs.Job;
-import play.jobs.OnApplicationStart;
 import controllers.ArtifactsController;
 
 /**
@@ -37,8 +35,8 @@ import controllers.ArtifactsController;
  * @author chamerling
  * 
  */
-@OnApplicationStart
-public class FileInit extends Job {
+//@OnApplicationStart
+public class FileInit  {//extends Job {
 
 	public void doJob() throws Exception {
 		Logger.info("Creating required folders");
@@ -68,7 +66,7 @@ public class FileInit extends Job {
 				a.url = file.getName();
 				a.save();
 			} else {
-				Logger.info("Aleady registered %s", file.getName());
+				Logger.info("Aleady registered " + file.getName());
 			}
 		}
 	};

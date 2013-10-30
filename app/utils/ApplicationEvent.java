@@ -20,7 +20,7 @@
 package utils;
 
 import com.google.common.eventbus.EventBus;
-import controllers.WebSocket;
+import controllers.actors.WebSocket;
 import models.BaseEvent;
 import models.Message;
 import play.Logger;
@@ -44,7 +44,8 @@ public class ApplicationEvent {
         Message message = new Message();
         message.content = String.format(pattern, args);
         message.title = "New event";
-        WebSocket.liveStream.publish(message);
+        System.out.println("TODO!!!");
+        WebSocket.message(message);
     }
 
     public static void post(String type, String pattern, Object... args) {
@@ -65,7 +66,7 @@ public class ApplicationEvent {
         }
 
         for(Object listener : listeners) {
-            Logger.info("Registering listener %s", listener.getClass().getCanonicalName());
+            Logger.info("Registering listener " + listener.getClass().getCanonicalName());
             bus.register(listener);
         }
     }

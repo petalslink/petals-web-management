@@ -1,71 +1,59 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# ~~~~
+GET         /                                                controllers.Application.index()
+GET         /events/clear                                    controllers.Application.clearEvents()
 
-#Import Secure
-*      /                  module:secure
+GET         /nodes                                           controllers.NodesController.index()
+POST        /nodes                                           controllers.NodesController.doCreateNode()
 
-# Home page
-GET     /                                       Application.index
-GET     /events/clear                           Application.clearEvents
+GET         /nodes/disconnect                                controllers.ConnectController.disconnect()
+GET         /nodes/:id/connect                               controllers.ConnectController.connect(id: Long)
 
-GET     /nodes                             		NodesController.index
-GET     /nodes/disconnect                		NodesController.disconnect
-GET     /nodes/sync                		        NodesController.syncTopology
-GET     /nodes/check                            NodesController.jsonCheckNode
+GET         /nodes/sync                                      controllers.NodesController.syncTopology()
+GET         /nodes/check                                     controllers.NodesController.jsonCheckNode()
 
-GET     /nodes/json/info                        NodesController.jsonSystemInfo
+GET         /nodes/json/info                                 controllers.NodesController.jsonSystemInfo()
 
-GET     /nodes/{id}                      		NodesController.node
-GET     /nodes/{id}/connect                		NodesController.connect
-GET     /nodes/{id}/stop                		NodesController.stop
-GET     /nodes/{id}/shutdown               		NodesController.shutdown
+GET         /nodes/:id                                       controllers.NodesController.node(id: Long)
+GET         /nodes/:id/stop                                  controllers.NodesController.stop(id: Long)
+GET         /nodes/:id/shutdown                              controllers.NodesController.shutdown(id: Long)
 
-GET     /artifacts                              ArtifactsController.index
+GET         /artifacts                                       controllers.ArtifactsController.index()
+GET         /artifacts/repository                            controllers.ArtifactsController.repository()
+POST        /artifacts/repository                            controllers.ArtifactsController.doRepositoryCreate()
+GET         /artifacts/repository/:id/deploy                 controllers.ArtifactsController.repositoryDeploy(id: Long)
+GET         /artifacts/components/:name/:tyype               controllers.ArtifactsController.component(name: String, tyype: String)
+POST        /artifacts/deploy                                controllers.ArtifactsController.doDeployAndStartArtifact()
+POST        /artifacts/upload                                controllers.ArtifactsController.doUpload()
+GET         /artifacts/undeploy/:name/:tyype                 controllers.ArtifactsController.doStopAndUndeployArtifact(name: String, tyype : String)
+GET         /artifacts/sls/:name                             controllers.ArtifactsController.sl(name: String)
+GET         /artifacts/sas/:name                             controllers.ArtifactsController.sa(name: String)
+GET         /artifacts/delete/locals                         controllers.ArtifactsController.deleteLocalArtifacts()
 
-GET     /artifacts/repository                   ArtifactsController.repository
-POST    /artifacts/repository                   ArtifactsController.doRepositoryCreate
-GET     /artifacts/repository/{id}/deploy       ArtifactsController.repositoryDeploy
-GET     /artifacts/components/{name}            ArtifactsController.component
-POST    /artifacts/deploy                       ArtifactsController.doDeployAndStartArtifact
-POST    /artifacts/upload                       ArtifactsController.doUpload
-GET     /artifacts/undeploy/{name}              ArtifactsController.doStopAndUndeployArtifact
-GET     /artifacts/sls/{name}                   ArtifactsController.sl
-GET     /artifacts/sas/{name}                   ArtifactsController.sa
-GET     /artifacts/delete/locals                ArtifactsController.deleteLocalArtifacts
-
-GET     /public/artifacts/                      ArtifactsController.repository
-
-GET     /endpoints                              EndpointsController.index
-GET     /endpoints/sync                         EndpointsController.synchronize()
-GET     /endpoints/syncall                      EndpointsController.synchronizeAll()
+GET         /endpoints                                       controllers.EndpointsController.index()
+GET         /endpoints/sync                                  controllers.EndpointsController.synchronize()
+GET         /endpoints/syncall                               controllers.EndpointsController.synchronizeAll()
 
 # Monitoring
 
-GET     /monitoring                                 MonitoringController.index
-GET     /monitoring/subscriptions                   MonitoringController.subscriptions
-GET     /monitoring/subscriptions/{id}/unsubscribe  MonitoringController.unsubscribe
-GET     /monitoring/subscriptions/{id}/delete       MonitoringController.delete
-GET     /monitoring/clear                           MonitoringController.clearAll
-GET     /monitoring/readall                         MonitoringController.markAllAsRead
-GET     /monitoring/json/unread                     MonitoringController.jsonUnreadAlerts
-GET     /monitoring/json/fake/add                   MonitoringController.addFakeAlert
-GET     /monitoring/json/fake/subscription/add      MonitoringController.addFakeSubscription
+GET         /monitoring                                      controllers.MonitoringController.index()
+GET         /monitoring/subscribe/:name/:tyype               controllers.MonitoringController.subscribe(name : String, tyype : String)
+GET         /monitoring/subscriptions                        controllers.MonitoringController.subscriptions()
+GET         /monitoring/subscriptions/:id/unsubscribe        controllers.MonitoringController.unsubscribe(id: Long)
+GET         /monitoring/subscriptions/:id/delete             controllers.MonitoringController.delete(id: Long)
+GET         /monitoring/clear                                controllers.MonitoringController.clearAll()
+GET         /monitoring/readall                              controllers.MonitoringController.markAllAsRead()
+GET         /monitoring/json/unread                          controllers.MonitoringController.jsonUnreadAlerts()
+GET         /monitoring/json/fake/add                        controllers.MonitoringController.addFakeAlert()
+GET         /monitoring/json/fake/subscription/add           controllers.MonitoringController.addFakeSubscription()
+
+GET         /websocket                                       controllers.Websocket.messageSocket()
+GET         /websocket/ping                                  controllers.Websocket.ping()
 
 # Send alerts to the client using Web socket channel
-WS      /monitoring/websocket/newAlert              AlertWebSocket.newAlert
+#WS      /monitoring/websocket/newAlert              controllers.AlertWebSocket.newAlert()
 
 # Websockets
-WS      /websocket/message                          WebSocket.newMessage
-
-# Ignore favicon requests
-GET     /favicon.ico                            404
+#WS      /websocket/message                          controllers.WebSocket.newMessage()
 
 # Map static resources from the /app/public folder to the /public path
-GET     /public/                                staticDir:public
+GET         /assets/*file                                    controllers.Assets.at(path="/public", file)
 
-# Catch all
-*       /{controller}/{action}                  {controller}.{action}
-
-# Import CRUD routes
-*      /admin              module:crud

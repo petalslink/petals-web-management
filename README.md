@@ -1,26 +1,16 @@
 # Petals Web Management
 
-Management Web console for OW2-Petals ESB ([http://petals.ow2.org](http://petals.ow2.org)) based on PlayFramework v1.
+Management Web console for OW2-Petals ESB ([http://petals.ow2.org](http://petals.ow2.org)) based on PlayFramework v2.
 
 ## Install & Run
 
-Download PlayFramework >= v1.2.5 at [http://www.playframework.com/download](http://www.playframework.com/download "Download Play Framework"), add it to your path and then:
+Download PlayFramework >= v2.2.1 at [http://www.playframework.com/download](http://www.playframework.com/download "Download Play Framework"), add it to your path and then:
 
     git clone https://github.com/petalslink/petals-web-management.git
     cd petals-web-management
-    play dependencies
-    play run
-    open http://localhost:9000
+    mvn
 
 The current version has been tested with Petals ESB v4.1. You can get it from [http://petals.ow2.org/download.html](http://petals.ow2.org/download.html "Download Petals ESB")
-
-## Develop
-
-Using Eclipse IDE:
-
-    play eclipsify
-
-Will generate an Eclipse project, then import it in Eclipse.
 
 ## Doc
 

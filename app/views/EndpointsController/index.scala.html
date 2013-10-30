@@ -1,0 +1,44 @@
+@(endpoints: List[org.ow2.petals.admin.registry.Endpoint])
+
+@main("Endpoints") {
+
+    <ul class="breadcrumb">
+      <li><a href="@routes.Application.index">Home</a> <span class="divider">/</span></li>
+      <li class="active">Endpoints</li>
+    </ul>
+
+    <div class="well">
+        <a href="@routes.EndpointsController.synchronizeAll" class="btn">Synchronize All</a>
+        &nbsp;
+        <a href="@routes.EndpointsController.synchronize" class="btn">Synchronize Current</a>
+    </div>
+
+    @if(endpoints != null) {
+    <table class="table table-striped">
+           <thead>
+             <tr>
+               <th>Name</th>
+               <th>Service</th>
+               <th>Interfaces</th>
+               <th>Actions</th>
+             </tr>
+           </thead>
+           <tbody>
+           @for(endpoint <- endpoints) {
+             <tr>
+                <td align="left"><a href="#">@endpoint.getEndpointName</a></td>
+               <td></td>
+               <td></td>
+               <td>
+                <a href="#" class="btn">Details</a>
+               </td>
+             </tr>
+           }
+           </tbody>
+       </table>
+    } else {
+        <div class="alert alert-info">
+            No endpoints
+        </div>
+    }
+}
