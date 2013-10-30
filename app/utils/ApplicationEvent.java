@@ -20,7 +20,7 @@
 package utils;
 
 import com.google.common.eventbus.EventBus;
-import controllers.WebSocket;
+import controllers.actors.WebSocket;
 import models.BaseEvent;
 import models.Message;
 import play.Logger;
@@ -45,7 +45,7 @@ public class ApplicationEvent {
         message.content = String.format(pattern, args);
         message.title = "New event";
         System.out.println("TODO!!!");
-        //WebSocket.liveStream.publish(message);
+        WebSocket.message(message);
     }
 
     public static void post(String type, String pattern, Object... args) {
