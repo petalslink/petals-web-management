@@ -41,7 +41,7 @@ public class MonitoringManager {
      * @param component
      * @return
      */
-    public static Subscription subscribe(final Node node, final String component, final AlertListener listener) throws MonitoringException {
+    public static Subscription subscribe(final Node node, final String component, final String componentType, final AlertListener listener) throws MonitoringException {
         Subscription result = null;
 
         if (node == null || component == null) {
@@ -60,12 +60,13 @@ public class MonitoringManager {
         result = new Subscription();
         result.date = new Date();
         result.component = component;
+        result.componentType = componentType;
         result.host = node.host;
         result.port = node.port;
         result.login = node.login;
         result.password = node.password;
         result.status = "Active";
-        result = result.save();
+        result.save();
         return result;
     }
 

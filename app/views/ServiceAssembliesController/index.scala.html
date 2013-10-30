@@ -1,0 +1,51 @@
+@(sas: List[org.ow2.petals.admin.api.artifact.ServiceAssembly])
+
+@main("Service Assemblies") {
+
+    <ul class="breadcrumb">
+      <li><a href="@routes.Application.index()">Home</a> <span class="divider">/</span></li>
+      <li class="active">Service Assemblies</li>
+    </ul>
+
+    <div class="well">
+        <a class="btn" href="">Deploy</a>&nbsp;
+    </div>
+
+    @if(sas != null) {
+        <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">x</button>
+            <h4>Info!</h4>
+            You have @sas.size() available service assembly
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>ID</th>
+                <th>State</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+            @for(sa <- sas) {
+              <tr>
+              <td align="left">-</td>
+                <td><a href="">@sa.getName</a></td>
+                <td>-</td>
+                <td>
+                    <a href="@routes.ArtifactsController.sa(sa.getName)" class="btn" target="_blank">Details</a>&nbsp;
+                    <a href="" class="btn btn-danger">-</a>
+                </td>
+              </tr>
+            }
+            </tbody>
+          </table>
+    } else {
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">x</button>
+            <h4>Info!</h4>
+            You do not have any service assembly in the current node.
+        </div>
+    }
+}

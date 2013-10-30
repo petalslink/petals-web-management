@@ -23,8 +23,9 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
-import play.db.jpa.Model;
+import play.db.ebean.Model;
 
 /**
  * Manage remote artifacts URLs
@@ -35,6 +36,9 @@ import play.db.jpa.Model;
 @Entity
 public class ArtifactURL extends Model {
 
+    @Id
+    public Long id;
+
 	public String name;
 
 	public String version;
@@ -43,21 +47,28 @@ public class ArtifactURL extends Model {
 
 	public Date date;
 
+    public static Finder<String,ArtifactURL> find = new Finder<String,ArtifactURL>(
+            String.class, ArtifactURL.class
+    );
+
 	/**
 	 * Local artifact (stored in the artifacts folder)
 	 */
 	public boolean local;
 
 	public static List<ArtifactURL> byName() {
-		return ArtifactURL.find("order by name desc").fetch();
+		return find.orderBy("name").findList();
 	}
 
 	public static List<ArtifactURL> locals() {
-		return ArtifactURL.find("local=true").fetch();
+		return find.where().ieq("local", "true").findList();
 	}
 
 	public static boolean localExists(String url) {
-		return ArtifactURL.count("local=true and url like ?", url) > 0;
+		return find.where().ieq("local", "true").ieq("url", url).findRowCount() > 0;
 	}
 
+    public static ArtifactURL findById(Long id) {
+        return find.byId("" + id);
+    }
 }

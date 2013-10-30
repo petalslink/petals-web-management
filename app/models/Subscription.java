@@ -19,9 +19,10 @@
  */
 package models;
 
-import play.db.jpa.Model;
+import play.db.ebean.Model;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Date;
 import java.util.List;
 
@@ -33,10 +34,18 @@ import java.util.List;
 @Entity
 public class Subscription extends Model {
 
+    @Id
+    public Long id;
+
     /**
      * Target subscription
      */
     public String component;
+
+    /**
+     * Component type may be useful...
+     */
+    public String componentType;
 
     /**
      * Remote node properties.
@@ -62,14 +71,18 @@ public class Subscription extends Model {
      */
     public Date unsubscribedAt;
 
+    public static Finder<String,Subscription> find = new Finder<String,Subscription>(
+            String.class, Subscription.class
+    );
+
     /**
      * Get all the subscription for a component
      *
      * @param component
      * @return
      */
-    public static List<Subscription> subscriptions(String component) {
-        return Subscription.find("component like ?", component).fetch();
+    public static List<Subscription> subscriptions(String component, String componentType) {
+        return find.where().ieq("component", component).ieq("componentType", componentType).findList();
     }
 
     /**
@@ -78,8 +91,8 @@ public class Subscription extends Model {
      * @param component
      * @return
      */
-    public static List<Subscription> subscriptions(String component, Node node) {
-        return Subscription.find("component like ? and host like ? and port like ?", component, node.host, node.port).fetch();
+    public static List<Subscription> subscriptions(String component, String componentType, Node node) {
+        return find.where().ieq("component", component).ieq("componentType", componentType).ieq("host", node.host).ieq("port", "" + node.port).findList();
     }
 
     /**
@@ -89,7 +102,14 @@ public class Subscription extends Model {
      * @return
      */
     public static List<Subscription> subscriptions(Node node) {
-        return Subscription.find("host like ? and port like ?", node.host, node.port).fetch();
+        return find.where().ieq("host", node.host).ieq("port", "" + node.port).findList();
     }
 
+    public static Subscription findById(Long id) {
+        return find.byId(id.toString());
+    }
+
+    public static void delete(Long id) {
+        find.byId(id.toString()).delete();
+    }
 }

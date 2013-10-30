@@ -1,0 +1,106 @@
+@(artifacts: List[models.ArtifactURL], form: Form[forms.DeployArtifactToRepository])
+
+@moreScripts = {
+    <script>
+    $('#addartifactbutton').click(function(){
+        $('#addartifactform').submit();
+     });
+
+    $('#uploadartifactbutton').click(function(){
+        $('#uploadartifactform').submit();
+     });
+    </script>
+}
+
+@main("Artifacts Repository", moreScripts) {
+
+<ul class="breadcrumb">
+  <li><a href="@routes.Application.index">Home</a> <span class="divider">/</span></li>
+  <li><a href="@routes.ArtifactsController.index">Artifacts</a> <span class="divider">/</span></li>
+  <li class="active">Repository</li>
+</ul>
+
+<div class="well">
+  <a href="#addArtifactModal" role="button" class="btn" data-toggle="modal">Add</a>
+  &nbsp;<a href="#uploadArtifactModal" role="button" class="btn" data-toggle="modal">Upload</a>
+  &nbsp;<a href="@routes.ArtifactsController.deleteLocalArtifacts()" class="btn btn-danger">Delete locals</a>
+</div>
+
+@if(artifacts != null && artifacts.size() > 0){
+    <table class="table table-striped">
+       <thead>
+         <tr>
+           <th>Name</th>
+           <th>Version</th>
+           <th>URL</th>
+           <th>Actions</th>
+         </tr>
+       </thead>
+       <tbody>
+       @for(artifact <- artifacts) {
+         <tr>
+         	<td align="left"><a href="#">@artifact.name</a></td>
+           	<td>@artifact.version</td>
+           	<td><a href="@artifact.url">@artifact.url</a></td>
+           	<td>
+				<a href="@routes.ArtifactsController.repositoryDeploy(artifact.id)" class="btn">Deploy</a>
+				&nbsp;<a href="#" class="btn btn-danger">Delete</a>
+           	</td>
+         </tr>
+       }
+       </tbody>
+    </table>
+} else {
+<div class="alert alert-info">
+    No artifacts in the repository. <a href="#addArtifactModal" data-toggle="modal">Add URL reference</a> or <a href="#uploadArtifactModal" data-toggle="modal">upload a file</a>.
+</div>
+}
+
+<!-- Upload artifact modal -->
+<div id="uploadArtifactModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="uploadArtifactModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="uploadArtifactModalLabel">Upload a new artifact</h3>
+    </div>
+    <div class="modal-body">
+        @helper.form(action = routes.ArtifactsController.doUpload, 'id -> "uploadartifactform", 'enctype -> "multipart/form-data") {
+            <fieldset>
+                <label>Select a file to upload</label>
+                <input type="file" name="artifact">
+                <span class="help-block">File will be stored on the Web server for later deployment</span>
+            </fieldset>
+        }
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button id="uploadartifactbutton" class="btn btn-primary" type="submit">Upload</button>
+    </div>
+</div>
+
+<!-- Add artifact modal -->
+<div id="addArtifactModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addArtifactModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="addArtifactModalLabel">Add a new Artifact URL</h3>
+    </div>
+    <div class="modal-body">
+        @helper.form(routes.ArtifactsController.doRepositoryCreate, 'id -> "addartifactform") {
+            @if(form.hasGlobalErrors) {
+                <p class="error">
+                @form.globalError.message
+                </p>
+            }
+            <label>Name</label>
+            <input class="span6" name="name" placeholder="Name" value="@form("name").value" type="text">
+            <label>URL</label>
+            <input class="span6" name="url" placeholder="URL" value="@form("url").value" type="text">
+            <label>Version</label>
+            <input class="span6" name="version" placeholder="Version" value="@form("version").value" type="text">
+        }
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button id="addartifactbutton" class="btn btn-primary" type="submit">Add</button>
+    </div>
+</div>
+}

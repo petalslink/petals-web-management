@@ -1,0 +1,23 @@
+@(sa: org.ow2.petals.admin.api.artifact.SharedLibrary)
+
+@main("Shared Library") {
+
+    <ul class="breadcrumb">
+      <li><a href="@routes.Application.index()">Home</a> <span class="divider">/</span></li>
+      <li><a href="@routes.ArtifactsController.index">Artifacts</a> <span class="divider">/</span></li>
+      <li><a href="@routes.ArtifactsController.index">Shared Libraries</a> <span class="divider">/</span></li>
+      <li class="active">@sa.getName<li>
+    </ul>
+
+    <div class="well">
+        <div class="btn-group">
+          <a class="btn dropdown-toggle btn-danger" data-toggle="dropdown" href="#">
+            Manage
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="@routes.ArtifactsController.doStopAndUndeployArtifact(sa.getName, "sl")">Stop and Undeploy</a></li>
+          </ul>
+        </div>
+    </div>
+}

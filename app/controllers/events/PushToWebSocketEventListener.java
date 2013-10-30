@@ -20,7 +20,7 @@
 package controllers.events;
 
 import com.google.common.eventbus.Subscribe;
-import controllers.WebSocket;
+import controllers.actors.WebSocket;
 import models.BaseEvent;
 import models.Message;
 import play.Logger;
@@ -42,10 +42,10 @@ public class PushToWebSocketEventListener {
 		if (event == null || !event.emit) {
 			return;
 		}
-		Logger.debug("New event to push to websocket %s", event.message);
+		Logger.debug(String.format("New event to push to websocket %s", event.message));
 		Message message = new Message();
 		message.content = event.message;
 		message.title = "New server event";
-		WebSocket.liveStream.publish(message);
-	}
+        WebSocket.message(message);
+    }
 }

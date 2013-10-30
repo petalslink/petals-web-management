@@ -1,7 +1,7 @@
 /**
  *
  * Copyright (c) 2013, Linagora
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -17,33 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package controllers;
+package controllers.forms;
 
-import com.google.gson.Gson;
-import models.Message;
-import play.Logger;
-import play.libs.F.EventStream;
-import play.mvc.WebSocketController;
+import org.hibernate.validator.internal.constraintvalidators.URLValidator;
+import play.data.validation.Constraints;
 
 /**
- * @author chamerling
- *
+ * @author Christophe Hamerling - chamerling@linagora.com
  */
-public class WebSocket extends WebSocketController {
-	
-	public static EventStream<Message> liveStream = new EventStream<Message>();
+public class DeployArtifact {
 
-	public static void newMessage() {
-		while (inbound.isOpen()) {
-			Message message = await(liveStream.nextEvent());
-			if (message != null) {
-				String json = new Gson().toJson(message);
-                try {
-				    outbound.send(json);
-                } catch (IllegalStateException e) {
-                    Logger.debug("Websocket error", e);
-                }
-			}
-		}
-	}
+    @Constraints.Required
+    @Constraints.Pattern(value = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", message = "Not a valid URL")
+    public String url;
+
 }

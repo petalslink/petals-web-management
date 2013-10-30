@@ -23,7 +23,10 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import controllers.actions.PetalsNodeSelected;
+import controllers.forms.*;
 import models.ArtifactURL;
 import models.Node;
 import models.Property;
@@ -37,11 +40,10 @@ import org.ow2.petals.admin.api.artifact.ServiceAssembly;
 import org.ow2.petals.admin.api.artifact.SharedLibrary;
 import play.Logger;
 import play.Play;
-import play.data.validation.Required;
-import play.jobs.Job;
-import play.libs.Files;
+import play.data.Form;
+import play.mvc.Http;
+import play.mvc.Result;
 import utils.ApplicationEvent;
-import utils.Check;
 import utils.Constants;
 import utils.PetalsAdmin;
 
@@ -52,354 +54,364 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
+import views.html.ArtifactsController.*;
+
 /**
  * @author chamerling
  */
+@PetalsNodeSelected
 public class ArtifactsController extends PetalsController {
 
-	public static void index() {
-		Collection<Component> components = null;
-		Collection<ServiceAssembly> sas = null;
-		Collection<SharedLibrary> sls = null;
+    public static Result index() {
+        List<Component> components = null;
+        List<ServiceAssembly> sas = null;
+        List<SharedLibrary> sls = null;
 
-		try {
-			List<Artifact> artifacts = PetalsAdmin.getArtifactAdministration(
-					getCurrentNode()).listArtifacts();
+        try {
+            List<Artifact> artifacts = PetalsAdmin.getArtifactAdministration(
+                    getCurrentNode()).listArtifacts();
 
-			components = Collections2.transform(Sets.newHashSet(Collections2
-					.filter(artifacts, new Predicate<Artifact>() {
-						public boolean apply(Artifact input) {
-							return input != null
-									&& (input.getType().equalsIgnoreCase(
-											ComponentType.BC.toString()) || input
-											.getType()
-											.equalsIgnoreCase(
-													ComponentType.SE.toString()));
-						}
-					})), new Function<Artifact, Component>() {
-				public Component apply(Artifact input) {
-					return (Component) input;
-				}
-			});
+            components = Lists.newArrayList(Collections2.transform(Sets.newHashSet(Collections2
+                    .filter(artifacts, new Predicate<Artifact>() {
+                        public boolean apply(Artifact input) {
+                            return input != null
+                                    && (input.getType().equalsIgnoreCase(
+                                    ComponentType.BC.toString()) || input
+                                    .getType()
+                                    .equalsIgnoreCase(
+                                            ComponentType.SE.toString()));
+                        }
+                    })), new Function<Artifact, Component>() {
+                public Component apply(Artifact input) {
+                    return (Component) input;
+                }
+            }));
 
-			sas = Collections2.transform(Sets.newHashSet(Collections2.filter(
-					artifacts, new Predicate<Artifact>() {
-						public boolean apply(Artifact input) {
-							return input != null
-									&& input.getType().equalsIgnoreCase("SA");
-						}
-					})), new Function<Artifact, ServiceAssembly>() {
-				public ServiceAssembly apply(Artifact input) {
-					return (ServiceAssembly) input;
-				}
-			});
+            sas = Lists.newArrayList(Collections2.transform(Sets.newHashSet(Collections2.filter(
+                    artifacts, new Predicate<Artifact>() {
+                public boolean apply(Artifact input) {
+                    return input != null
+                            && input.getType().equalsIgnoreCase("SA");
+                }
+            })), new Function<Artifact, ServiceAssembly>() {
+                public ServiceAssembly apply(Artifact input) {
+                    return (ServiceAssembly) input;
+                }
+            }));
 
-			sls = Collections2.transform(Sets.newHashSet(Collections2.filter(
-					artifacts, new Predicate<Artifact>() {
-						public boolean apply(Artifact input) {
-							return input != null
-									&& input.getType().equalsIgnoreCase("SL");
-						}
-					})), new Function<Artifact, SharedLibrary>() {
-				public SharedLibrary apply(Artifact input) {
-					return (SharedLibrary) input;
-				}
-			});
+            sls = Lists.newArrayList(Collections2.transform(Sets.newHashSet(Collections2.filter(
+                    artifacts, new Predicate<Artifact>() {
+                public boolean apply(Artifact input) {
+                    return input != null
+                            && input.getType().equalsIgnoreCase("SL");
+                }
+            })), new Function<Artifact, SharedLibrary>() {
+                public SharedLibrary apply(Artifact input) {
+                    return (SharedLibrary) input;
+                }
+            }));
 
-		} catch (Exception e) {
-			Logger.error(e, "Error while getting client");
-			flash.error("Can not get client : %s", e.getMessage());
-		}
+        } catch (Exception e) {
+            Logger.error("Error while getting client", e);
+            flash("error", String.format("Can not get client : %s", e.getMessage()));
+        }
 
-		render(components, sas, sls);
-	}
+        return ok(index.render(components, sas, sls, play.data.Form.form(DeployArtifact.class)));
+    }
 
-	public static void artifact(String name, String type) {
-		render();
-	}
+    public static Result artifact(String name, String type) {
+        // TODO
+        flash("error", "TODO");
+        return index();
+    }
 
-	public static void doDeployAndStartArtifact(
-			@Required(message = "URL is required") final String url) {
+    /**
+     * Deploy and start artifact from URL
+     *
+     * @return
+     */
+    public static Result doDeployAndStartArtifact() {
 
-		validation.required(url);
-		validation.isTrue(Check.isURL(url));
+        Form<DeployArtifact> form = play.data.Form.form(DeployArtifact.class).bindFromRequest();
+        if(form.hasErrors()) {
+            flash("error", "Bad parameters");
+            return redirect(routes.ArtifactsController.index());
+        } else {
+            final Node node = getCurrentNode();
+            // TODO : Deploy async
 
-		if (validation.hasErrors()) {
-			params.flash();
-			validation.keep();
-			index();
-		}
+            /*
+            Akka.system().scheduler().scheduleOnce(
+                    Duration.create(10, TimeUnit.SECONDS),
+                    new Runnable() {
+                        public void run() {
+                            ApplicationEvent.info("Deployed artifact %s", "PING");
+                        }
+                    }, null);
+            */
 
-		final Node node = getCurrentNode();
-		new Job() {
-			@Override
-			public void doJob() throws Exception {
-				try {
-					PetalsAdmin.getArtifactAdministration(node)
-							.deployAndStartArtifact(new URL(url));
+            try {
+                PetalsAdmin.getArtifactAdministration(node)
+                            .deployAndStartArtifact(new URL(form.get().url));
+                ApplicationEvent.info("Artifact deployed and started from %s", form.get().url);
+            } catch (Exception e) {
+                Logger.error(String.format("Error while deploying artifact %s", form.get().url), e);
+                ApplicationEvent.warning("Error while deploying artifact %s : %s", form.get().url, e.getMessage());
+            }
+            flash("success", String.format("Artifact is being deployed from URL %s...", form.get().url));
+        }
+        return redirect(routes.ArtifactsController.index());
+    }
 
-					ApplicationEvent.info("Artifact deployed and started from %s", url);
-				} catch (Exception e) {
-					e.printStackTrace();
-                    ApplicationEvent.warning("Error while deploying artifact %s : %s", url, e.getMessage());
-				}
-			}
-		}.in(2); // delay...
+    /**
+     * Stop and undeploy component
+     *
+     * @param name
+     * @param type
+     * @return
+     */
+    public static Result doStopAndUndeployArtifact(final String name,
+                                                   final String type) {
 
-		flash.success("Artifact is being deployed from URL %s...", url);
-		index();
-	}
+        if (name == null || type == null) {
+            flash("error", "Bad parameters");
+            return redirect(routes.ArtifactsController.index());
+        } else {
+            final Node node = getCurrentNode();
+            // TODO : Async
+            try {
+                PetalsAdmin.getArtifactAdministration(node)
+                        .stopAndUndeployArtifact(type, name);
+                ApplicationEvent.info("Artifact '%s' stopped and undeployed", name);
+            } catch (Exception e) {
+                Logger.error(String.format("Error while undeploying artifact %s"), e);
+                ApplicationEvent.warning("Error while undeploying artifact '%s' : %s",
+                        name, e.getMessage());
+            }
+            flash("success", String.format("Stopping and undeploying artifact %s",
+                    name));
+        }
+        return redirect(routes.ArtifactsController.index());
+    }
 
-	public static void doStopAndUndeployArtifact(final String name,
-			final String type) {
+    public static Result component(String name, String tyype) {
+        try {
+            Artifact artifact = PetalsAdmin.getArtifactAdministration(
+                    getCurrentNode()).getArtifactInfo(tyype, name);
 
-		final Node node = getCurrentNode();
-		new Job() {
-			@Override
-			public void doJob() throws Exception {
-				try {
-					PetalsAdmin.getArtifactAdministration(node)
-							.stopAndUndeployArtifact(type, name);
+            if (artifact != null) {
+                final Component c = (Component) artifact;
 
-                    ApplicationEvent.info("Artifact '%s' stopped and undeployed", name);
+                Set<Property> properties = ImmutableSortedSet
+                        .orderedBy(new Comparator<Property>() {
+                            public int compare(Property r1, Property r2) {
+                                return r1.name.compareToIgnoreCase(r2.name);
+                            }
+                        })
+                        .addAll(Collections2.transform(c
+                                .getParameters().stringPropertyNames(),
+                                new Function<String, Property>() {
+                                    public Property apply(String key) {
+                                        return new Property(key, c
+                                                .getParameters().getProperty(
+                                                        key));
+                                    }
+                                })).build();
 
-                } catch (Exception e) {
-					e.printStackTrace();
-                    ApplicationEvent.warning("Error while undeploying artifact '%s' : %s",
-									name, e.getMessage());
-				}
-			}
-		}.in(2); // delay...
+                List<Subscription> subscriptions = Subscription.subscriptions(name, tyype, getCurrentNode());
+                return ok(component.render(c, properties, subscriptions));
+            } else {
+                flash("error", "No such component");
+                return index();
+            }
+        } catch (Exception e) {
+            flash("error", String.format("Error while getting component information : %s",
+                    e.getMessage()));
+            return index();
+        }
+    }
 
-		flash.success("Stopping and undeploying artifact %s",
-				name);
-		index();
-	}
+    public static Result sa(String name) {
+        try {
+            Artifact artifact = PetalsAdmin.getArtifactAdministration(
+                    getCurrentNode()).getArtifactInfo("SA", name);
 
-	public static void component(String name, String type) {
-		try {
-			Artifact artifact = PetalsAdmin.getArtifactAdministration(
-					getCurrentNode()).getArtifactInfo(type, name);
+            if (artifact != null) {
+                final ServiceAssembly serviceAssembly = (ServiceAssembly) artifact;
+                return ok(sa.render(serviceAssembly));
+            } else {
+                flash("error", "No such service assembly");
+                return index();
+            }
+        } catch (Exception e) {
+            flash("error", String.format(
+                    "Error while getting service assembly information : %s",
+                    e.getMessage()));
+            return index();
+        }
+    }
 
-			if (artifact != null) {
-				final Component component = (Component) artifact;
+    public static Result sl(String name) {
+        try {
+            Artifact artifact = PetalsAdmin.getArtifactAdministration(
+                    getCurrentNode()).getArtifactInfo("SL", name);
 
-				Set<Property> properties = ImmutableSortedSet
-						.orderedBy(new Comparator<Property>() {
-							public int compare(Property r1, Property r2) {
-								return r1.name.compareToIgnoreCase(r2.name);
-							}
-						})
-						.addAll(Collections2.transform(component
-								.getParameters().stringPropertyNames(),
-								new Function<String, Property>() {
-									public Property apply(String key) {
-										return new Property(key, component
-												.getParameters().getProperty(
-														key));
-									}
-								})).build();
+            if (artifact != null) {
+                final SharedLibrary sharedLibrary = (SharedLibrary) artifact;
+                return ok(sl.render(sharedLibrary));
+            } else {
+                flash("error", "No such shared library");
+                return index();
+            }
+        } catch (Exception e) {
+            flash("error", String.format("Error while getting shared library information : %s",
+                    e.getMessage()));
+            return index();
+        }
+    }
 
-                List<Subscription> subscriptions = Subscription.subscriptions(name, getCurrentNode());
-				render(component, properties, subscriptions);
-			} else {
-				flash.error("No such component");
-				index();
-			}
-		} catch (Exception e) {
-			flash.error("Error while getting component information : %s",
-					e.getMessage());
-			index();
-		}
-	}
+    public static Result repository() {
+        List<ArtifactURL> artifacts = Lists.newArrayList(Collections2.transform(
+                ArtifactURL.byName(), new Function<ArtifactURL, ArtifactURL>() {
+            public ArtifactURL apply(ArtifactURL input) {
+                input.url = getArtifactURL(input);
+                return input;
+            }
+        }));
+        return ok(repository.render(artifacts, Form.form(DeployArtifactToRepository.class)));
+    }
 
-	public static void sa(String name) {
-		try {
-			Artifact artifact = PetalsAdmin.getArtifactAdministration(
-					getCurrentNode()).getArtifactInfo("SA", name);
+    /**
+     * Deploy from repository ie get the URL from the repository.
+     *
+     * @param id
+     */
+    public static Result repositoryDeploy(Long id) {
+        final ArtifactURL artifact = ArtifactURL.findById(id);
+        if (artifact == null) {
+            flash("error", "Artifact not found");
+            return redirect(routes.ArtifactsController.repository());
+        } else {
+            // get it here since we are in the session context...
+            // TODO : Async
+            final Node node = getCurrentNode();
+            try {
+                PetalsAdmin.getArtifactAdministration(node)
+                        .deployAndStartArtifact(
+                                new URL(getArtifactURL(artifact)));
 
-			if (artifact != null) {
-				final ServiceAssembly sa = (ServiceAssembly) artifact;
-				render(sa);
-			} else {
-				flash.error("No such service assembly");
-				index();
-			}
-		} catch (Exception e) {
-			flash.error(
-					"Error while getting service assembly information : %s",
-					e.getMessage());
-			index();
-		}
-	}
+                ApplicationEvent.info("Artifact %s deployed and started", artifact.name);
+            } catch (Exception e) {
+                Logger.error(String.format("Error while deploying artifact %s", artifact.name), e);
+                ApplicationEvent.warning("Error while deploying artifact %s : %s", artifact.name, e.getMessage());
+            }
+            flash("info", String.format("Artifact is being deployed from URL %s...",
+                    getArtifactURL(artifact)));
+            return redirect(routes.ArtifactsController.index());
+        }
+    }
 
-	public static void sl(String name) {
-		try {
-			Artifact artifact = PetalsAdmin.getArtifactAdministration(
-					getCurrentNode()).getArtifactInfo("SL", name);
+    public static Result doRepositoryCreate() {
+        Form<RepositoryCreate> form = play.data.Form.form(RepositoryCreate.class).bindFromRequest();
+        if(form.hasErrors()) {
+            flash("error", "Bad parameters");
+            return redirect(routes.ArtifactsController.repository());
+        } else {
+            ArtifactURL a = new ArtifactURL();
+            a.date = new Date();
+            a.name = form.get().name;
+            a.url = form.get().url;
+            a.version = form.get().version;
+            a.save();
+            ApplicationEvent.info("Artifact %s has been created", a.name);
+            flash("success", String.format("Artifact %s has been registered", a.name));
+            return redirect(routes.ArtifactsController.repository());
+        }
+    }
 
-			if (artifact != null) {
-				final SharedLibrary sl = (SharedLibrary) artifact;
-				render(sl);
-			} else {
-				flash.error("No such shared library");
-				index();
-			}
-		} catch (Exception e) {
-			flash.error("Error while getting shared library information : %s",
-					e.getMessage());
-			index();
-		}
-	}
+    /**
+     * Upload a new artifact from file and add it to the artifacts list
+     */
+    public static Result doUpload() {
 
-	public static void repository() {
-		Collection<ArtifactURL> artifacts = Collections2.transform(
-				ArtifactURL.byName(), new Function<ArtifactURL, ArtifactURL>() {
-					public ArtifactURL apply(ArtifactURL input) {
-						input.url = getArtifactURL(input);
-						return input;
-					}
-				});
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart f = body.getFile("artifact");
+        if (f != null) {
+            String fileName = f.getFilename();
+            System.out.println(fileName);
+            File file = f.getFile();
 
-		render(artifacts);
-	}
+            // TODO : get a new name if already exists...
+            File out = new File(getArtifactsFolder(), fileName);
+            try {
+                FileInputStream is = new FileInputStream(file);
+                IOUtils.copy(is, new FileOutputStream(out));
+            } catch (IOException e) {
+                e.printStackTrace();
+                ApplicationEvent.warning("Can not copy file to local folder %s", e.getMessage());
+                flash("error", String.format("Can not copy file to local folder : %s",
+                        e.getMessage()));
+                return repository();
+            }
 
-	/**
-	 * Deploy from repository ie get the URL from the repository.
-	 * 
-	 * @param id
-	 */
-	public static void repositoryDeploy(Long id) {
-		final ArtifactURL artifact = ArtifactURL.findById(id);
-		if (artifact == null) {
-			flash.error("Artifact not found");
-			repository();
-		}
+            String version = null;
 
-		// get it here since we are in the session context...
-		final Node node = getCurrentNode();
-		new Job() {
-			@Override
-			public void doJob() throws Exception {
-				try {
-					PetalsAdmin.getArtifactAdministration(node)
-							.deployAndStartArtifact(
-									new URL(getArtifactURL(artifact)));
+            // when copied, store the artifact in the database
+            ApplicationEvent.info("Artifact %s uploaded into repository", fileName);
+            ArtifactURL artifact = new ArtifactURL();
+            artifact.date = new Date();
+            artifact.name = fileName;
+            artifact.version = version == null ? "" : version;
+            artifact.local = true;
+            // storing just the local name for later processing and URL handling...
+            artifact.url = fileName;
+            artifact.save();
 
-                    ApplicationEvent.info("Artifact %s deployed and started", artifact.name);
-				} catch (Exception e) {
-					e.printStackTrace();
-                    ApplicationEvent.warning("Error while deploying artifact %s : %s", artifact.name, e.getMessage());
-				}
-			}
-		}.in(2); // delay...
+            flash("success", "Artifact deployed");
+            return redirect(routes.ArtifactsController.repository());
+        } else {
+            flash("error", "Missing file");
+            return redirect(routes.ArtifactsController.repository());
+        }
+    }
 
-		flash.success("Artifact is being deployed from URL %s...",
-				getArtifactURL(artifact));
-		index();
-	}
+    /**
+     * Delete local files and their entries in the DB
+     */
+    public static Result deleteLocalArtifacts() {
+        List<ArtifactURL> locals = ArtifactURL.locals();
+        for (ArtifactURL artifactURL : locals) {
+            artifactURL.delete();
+        }
 
-	public static void doRepositoryCreate(
-			@Required(message = "Name is required") String name,
-			@Required(message = "URL is required") String url, String version) {
-		validation.required(name);
-		validation.required(url);
+        deleteLocalArtifactFiles();
 
-		if (validation.hasErrors()) {
-			params.flash();
-			validation.keep();
-			repository();
-		}
+        flash("success", "Local artifacts deleted");
+        return repository();
+    }
 
-		ArtifactURL a = new ArtifactURL();
-		a.date = new Date();
-		a.name = name;
-		a.url = url;
-		a.save();
+    /**
+     * Protected so that it does not fire a render event...
+     */
+    protected static Result deleteLocalArtifactFiles() {
+        Iterator<File> iter = FileUtils.iterateFiles(getArtifactsFolder(),
+                new String[] { "zip" }, false);
+        while (iter.hasNext()) {
+            System.out.println("TODO : Delete " + iter.next());
+            //FileUtils.deleteQuietly(iter.next());
+        }
+        return repository();
+    }
 
-        ApplicationEvent.info("Artifact %s has been created", name);
-		flash.success("Artifact %s has been registered", name);
-		repository();
-	}
+    public static File getArtifactsFolder() {
+        return new File(Play.application().getFile("public"), Constants.ARTIFACTS_FOLDER);
+    }
 
-	/**
-	 * Upload a new artifact and add it to the artifacts list
-	 */
-	public static void doUpload(String name, String version, File file) {
-
-		if (file == null) {
-			flash.error("Can not get input file");
-			repository();
-		}
-
-		if (name == null || name.trim().length() == 0) {
-			name = file.getName();
-		}
-
-		// TODO : get a new name if already exists...
-		File out = new File(getArtifactsFolder(), file.getName());
-		try {
-			FileInputStream is = new FileInputStream(file);
-			IOUtils.copy(is, new FileOutputStream(out));
-		} catch (IOException e) {
-			e.printStackTrace();
-            ApplicationEvent.warning("Can not copy file to local folder %s", e.getMessage());
-			flash.error("Can not copy file to local folder : %s",
-					e.getMessage());
-			repository();
-		}
-
-		// when copied, store the artifact in the database
-        ApplicationEvent.info("Artifact %s uploaded into repository", name);
-		ArtifactURL artifact = new ArtifactURL();
-		artifact.date = new Date();
-		artifact.name = name;
-		artifact.version = version == null ? "" : version;
-		artifact.local = true;
-		// storing just the local name for later processing and URL handling...
-		artifact.url = file.getName();
-		artifact.save();
-
-		flash.success("Artifact deployed");
-		repository();
-	}
-
-	/**
-	 * Delete local files and their entries in the DB
-	 */
-	public static void deleteLocalArtifacts() {
-		List<ArtifactURL> locals = ArtifactURL.locals();
-		for (ArtifactURL artifactURL : locals) {
-			artifactURL.delete();
-		}
-
-		deleteLocalArtifactFiles();
-
-		flash.success("Local artifacts deleted");
-		repository();
-	}
-
-	/**
-	 * Protected so that it does not fire a render event...
-	 */
-	protected static void deleteLocalArtifactFiles() {
-		Iterator<File> iter = FileUtils.iterateFiles(getArtifactsFolder(),
-				new String[] { "zip" }, false);
-		while (iter.hasNext()) {
-			Files.delete(iter.next());
-		}
-		return;
-	}
-
-	public static File getArtifactsFolder() {
-		return new File(Play.getFile("public"), Constants.ARTIFACTS_FOLDER);
-	}
-
-	public static String getArtifactURL(ArtifactURL artifact) {
-		if (artifact.local) {
-			return request.getBase() + "/public/" + Constants.ARTIFACTS_FOLDER
-					+ "/" + artifact.url;
-		}
-		return artifact.url;
-	}
+    public static String getArtifactURL(ArtifactURL artifact) {
+        if (artifact.local) {
+            // TODO : Get it from Play
+            return "http://" + request().host() + "/assets/" + Constants.ARTIFACTS_FOLDER + "/" + artifact.name;
+        }
+        return artifact.url;
+    }
 }

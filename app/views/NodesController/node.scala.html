@@ -1,0 +1,132 @@
+@(node : models.Node, info : String, properties : Set[models.Property], loggers : Set[org.ow2.petals.admin.api.artifact.Logger], systemInfo : Set[models.Property])
+
+@main("Node") {
+    <ul class="breadcrumb">
+      <li><a href="@routes.Application.index">Home</a> <span class="divider">/</span></li>
+      <li><a href="@routes.NodesController.index">Nodes</a> <span class="divider">/</span></li>
+      <li class="active">@node.id</li>
+    </ul>
+
+    @if(Long.parseLong(session.get("currentnode")) == node.id) {
+
+    <div class="alert alert-info">
+        <button type="button" class="close" data-dismiss="alert">x</button>
+        <h4>Info!</h4>
+        You are currently connected to this node
+    </div>
+
+
+    <div class="well">
+        <a href="@routes.NodesController.stop(node.id)" class="btn">Stop</a>&nbsp;
+        <a href="@routes.NodesController.shutdown(node.id)" class="btn">Shutdown</a>&nbsp;
+    </div>
+
+    <div id="info">
+        @if(info) {
+            <h3>Server Information</h3>
+            <pre>@info</pre>
+        }
+    </div>
+
+    <div class="tabbable"> <!-- Only required for left/right tabs -->
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab1" data-toggle="tab">Properties</a></li>
+        <li><a href="#tab2" data-toggle="tab">System</a></li>
+        <li><a href="#tab3" data-toggle="tab">Loggers</a></li>
+        <li><a href="#tab4" data-toggle="tab">Topology</a></li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane active" id="tab1">
+            <div id="properties">
+            @if(properties != null) {
+                <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                   @for(property <- properties) {
+                      <tr>
+                      <td align="left"><b>@property.name</b></td>
+                        <td>@property.value</td>
+                        <td>
+                            <a href="#" class="btn btn-danger">Edit</a>
+                        </td>
+                      </tr>
+                    }
+                    </tbody>
+                </table>
+            } else {
+                <span>Not available</span>
+            }
+            </div>
+        </div>
+        <div class="tab-pane" id="tab2">
+            <div id="system">
+                @if(systemInfo != null) {
+                <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    @for(system <- systemInfo) {
+                      <tr>
+                        <td align="left"><b>@system.name</b></td>
+                        <td>@system.value</td>
+                      </tr>
+                    }
+                    </tbody>
+                  </table>
+                } else {
+                <span>Not available</span>
+                }
+            </div>
+        </div>
+        <div class="tab-pane" id="tab3">
+          <div id="loggers">
+          @if(loggers != null) {
+              <table class="table table-striped">
+                  <thead>
+                  <tr>
+                      <th>Name</th>
+                      <th>Value</th>
+                      <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                      @for(logger <- loggers) {
+                      <tr>
+                          <td align="left"><b>@logger.getName</b></td>
+                          <td>@logger.getLevel</td>
+                          <td>
+                              <a href="#" class="btn btn-danger">Change Level</a>
+                          </td>
+                      </tr>
+                      }
+                  </tbody>
+              </table>
+          } else {
+              <span>Not available</span>
+          }
+          </div>
+        </div>
+        <div class="tab-pane" id="tab4">
+            <span>Not available</span>
+        </div>
+      </div>
+    </div>
+
+    } else {
+    <div class="alert alert-error">
+        <button type="button" class="close" data-dismiss="alert">x</button>
+        <h4>Info!</h4>
+        You are NOT currently connected to this node
+    </div>
+    }
+}

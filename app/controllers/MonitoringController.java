@@ -19,41 +19,49 @@
  */
 package controllers;
 
+import controllers.actions.PetalsNodeSelected;
 import models.Alert;
 import models.Node;
 import models.Subscription;
 import monitoring.DefaultAlertListener;
 import monitoring.MonitoringException;
 import monitoring.MonitoringManager;
+import org.codehaus.jackson.node.ObjectNode;
 import play.Logger;
-import play.data.validation.Required;
-import play.jobs.Job;
+import play.mvc.Result;
+import play.data.validation.Constraints;
+import play.libs.Json;
+import play.mvc.BodyParser;
 import utils.ApplicationEvent;
 
 import java.util.Date;
 import java.util.List;
+
+import views.html.MonitoringController.*;
+
 
 /**
  * Monitoring Controller
  *
  * @author Christophe Hamerling - chamerling@linagora.com
  */
+@PetalsNodeSelected
 public class MonitoringController extends PetalsController {
 
     /**
      * Default monitoring page
      */
-    public static void index() {
+    public static Result index() {
         List<Alert> alerts = Alert.unread();
-        render(alerts);
+        return ok(index.render(alerts));
     }
 
     /**
      * Get the current node subscriptions
      */
-    public static void subscriptions() {
-        List<Subscription> subscriptions = Subscription.subscriptions(getCurrentNode());
-        render(subscriptions);
+    public static Result subscriptions() {
+        List<Subscription> s = Subscription.subscriptions(getCurrentNode());
+        return ok(subscriptions.render(s));
     }
 
     /**
@@ -61,27 +69,26 @@ public class MonitoringController extends PetalsController {
      *
      * @param component
      */
-    public static void subscribe(@Required(message = "Component is required") String component) {
+    public static Result subscribe(String component, String tyype) {
         Node node = getCurrentNode();
 
-        validation.required(component);
-        if (validation.hasErrors()) {
-            params.flash();
-            validation.keep();
-            subscriptions();
+        // TODO : Validate that component is not null
+        if (component == null) {
+            flash("error", "Component name can not be null");
+            return redirect(routes.ArtifactsController.component(component, tyype));
         }
 
         try {
-            Subscription subscription = MonitoringManager.subscribe(node, component, new DefaultAlertListener());
-            flash.success("Subscribed to component %s (id=%s)", component, "" + subscription.getId());
+            Subscription subscription = MonitoringManager.subscribe(node, component, tyype, new DefaultAlertListener());
+            flash("success", String.format("Subscribed to component %s:%s", component, tyype));
         } catch (Exception e) {
             final String message = e.getMessage();
-            Logger.error(e, "Error while subscribing to component %s : %s", component, message);
-            flash.error("Error while subscribing to component %s : %s", component, message);
-            subscriptions();
+            Logger.error(String.format("Error while subscribing to component %s : %s", component, message), e);
+            flash("error", String.format("Error while subscribing to component %s : %s", component, message));
+            return subscriptions();
         }
 
-        subscriptions();
+        return subscriptions();
     }
 
     /**
@@ -89,30 +96,24 @@ public class MonitoringController extends PetalsController {
      *
      * @param id
      */
-    public static void unsubscribe(Long id) {
+    public static Result unsubscribe(Long id) {
 
-        Subscription s = Subscription.findById(id);
+        final Subscription s = Subscription.findById(id);
         if (s == null) {
-            flash.error("Can not find subscription");
-            subscriptions();
+            flash("error", "Can not find subscription");
+            return subscriptions();
         }
-        final Subscription unsubscribed = s.delete();
+        s.delete();
 
-        // let's do it async...
-        new Job() {
-            @Override
-            public void doJob() throws Exception {
-                try {
-                    MonitoringManager.unsubscribe(unsubscribed);
-                    ApplicationEvent.live("Unsubcribed from %s", unsubscribed.component);
-                } catch (MonitoringException e) {
-                    ApplicationEvent.warning("Error while unsubscribing from %s@%s:%s", unsubscribed.component, unsubscribed.host, "" + unsubscribed.port);
-                }
-            }
-        }.now();
-
-        flash.success("Unsubscribing from %s@%s:%s...", unsubscribed.component, unsubscribed.host, "" + unsubscribed.port);
-        subscriptions();
+        // TODO : Async
+        try {
+            MonitoringManager.unsubscribe(s);
+            ApplicationEvent.live("Unsubcribed from %s", s.component);
+        } catch (MonitoringException e) {
+            ApplicationEvent.warning("Error while unsubscribing from %s@%s:%s", s.component, s.host, "" + s.port);
+        }
+        flash("success", String.format("Unsubscribing from %s@%s:%s...", s.component, s.host, "" + s.port));
+        return subscriptions();
     }
 
     /**
@@ -120,33 +121,36 @@ public class MonitoringController extends PetalsController {
      *
      * @param id
      */
-    public static void delete(Long id) {
-        Subscription.delete("id", id);
-        flash.success("Subscription removed");
-        subscriptions();
+    public static Result delete(Long id) {
+        Subscription.delete(id);
+        flash("success", "Subscription removed");
+        return subscriptions();
     }
 
     /**
      * Fake to add alert to the list...
      */
-    public static void addFakeAlert() {
+    public static Result addFakeAlert() {
         Alert a = new Alert();
         a.message = "Problem on the SOAP component";
         a.read = false;
         a.receivedAt = new Date();
         a.source = "petals/1/petals-bc-soap";
 
-        a = a.save();
+        a.save();
         ApplicationEvent.info("New alert has been raised : %s", a.message);
-        AlertWebSocket.alertStream.publish(a);
 
-        renderJSON(a);
+        //
+        // TODO
+        System.out.println("TODO : Push to WS alert");
+        //AlertWebSocket.alertStream.publish(a);
+        return ok(Json.toJson(a));
     }
 
     /**
      * Fake to add subscription to the list...
      */
-    public static void addFakeSubscription() {
+    public static Result addFakeSubscription() {
         Subscription s = new Subscription();
 
         s.date = new Date();
@@ -154,32 +158,35 @@ public class MonitoringController extends PetalsController {
         s.host = "localhost";
         s.port = 7700;
         s.status = "Active";
-        s = s.save();
+        s.save();
         ApplicationEvent.info("New subscription to %s@%s:%s", s.component, s.host, "" + s.port);
 
-        renderJSON(s);
+        return ok(Json.toJson(s));
     }
 
     /**
      * Get the unread alerts as JSON
      */
-    public static void jsonUnreadAlerts() {
-        renderJSON(Alert.unreadCount());
+    @BodyParser.Of(BodyParser.Json.class)
+    public static Result jsonUnreadAlerts() {
+        ObjectNode result = Json.newObject();
+        result.put("nb", Alert.unreadCount());
+        return ok(result);
     }
 
     /**
      * GET
      */
-    public static void markAllAsRead() {
+    public static Result markAllAsRead() {
         Alert.readAll();
-        index();
+        return index();
     }
 
     /**
      * GET
      */
-    public static void clearAll() {
+    public static Result clearAll() {
         Alert.deleteAll();
-        index();
+        return index();
     }
 }

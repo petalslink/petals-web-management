@@ -1,0 +1,198 @@
+@(title: String, moreScripts : Html = Html(""))(content: Html)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Petals.ESB - @title</title>
+        <meta charset="utf-8">
+		<link rel="stylesheet" href="@routes.Assets.at("assets/css/bootstrap.css")">
+		<style type="text/css">
+		body {
+			padding-top: 60px;
+			padding-bottom: 40px;
+		}
+		
+		.sidebar-nav {
+			padding: 9px 0;
+		}
+		</style>
+		<link rel="stylesheet" href="@routes.Assets.at("assets/css/bootstrap-responsive.css")">
+		<link rel="stylesheet" href="@routes.Assets.at("assets/gritter/css/jquery.gritter.css")">
+    </head>
+    <body>
+
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<a class="brand" href="@routes.Application.index">Petals.ESB</a>
+				<div class="nav-collapse" id="main-menu">
+					<ul class="nav" id="main-menu-left">
+						<!-- <li><a href="">Groups</a></li> -->
+						
+						<li class="dropdown" id="preview-menu">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">Artifacts <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="@routes.ArtifactsController.index">List</a></li>
+								<li><a href="@routes.ArtifactsController.repository">Repository</a></li>
+							</ul>
+						</li>
+						<li class="dropdown" id="preview-menu">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">Endpoints <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="@routes.EndpointsController.index">List</a></li>
+							</ul>
+						</li>
+                        <li class="dropdown" id="preview-menu">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Monitoring <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="@routes.MonitoringController.subscriptions">Subscriptions</a></li>
+                                <li><a href="@routes.MonitoringController.index">Alerts</a></li>
+                                <li><a href="@routes.MonitoringController.index">Timeline</a></li>
+                            </ul>
+                        </li>
+					</ul>
+
+					<ul class="nav pull-right" id="main-menu-right">
+						<li class="dropdown" id="preview-menu">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+							<img src="" width="20px" height="20px" />
+							@if(session.get("currentnode") != null) {
+							    <span>Connected to #@session.get("currentnode")</span>
+							} else {
+							    <span>Not connected</span>
+							}
+							<b class="caret"></b></a>
+							
+							<ul class="dropdown-menu">
+								<li><a href="@routes.NodesController.index">Select Node</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+	
+	<div class="row">
+        <div class="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+              <li class="nav-header">Context</li>
+              <li><a href="@routes.Application.index()"><i class="icon-fire"></i> Activity <span class="badge badge-important" id="event-count" style="display: none">0</span></a></li>
+              <li><a href="@routes.MonitoringController.index()"><i class="icon-signal"></i> Alerts <span class="badge badge-important" id="alert-count" style="display: none">0</span></a></li>
+              @if(session.get("currentnode") != null) {
+                  <li class="divider"></li>
+                  <li class="nav-header">Node Resources</li>
+                  <li><a href="@routes.NodesController.node(Long.parseLong(session.get("currentnode")))"><i class="icon-info-sign"></i> Info</a></li>
+                  <li><a href="@routes.ArtifactsController.index()"><i class="icon-tag"></i> Artifacts <span class="badge badge-info">0</span></a></li>
+                  <li><a href="@routes.EndpointsController.index()"><i class="icon-tags"></i> Endpoints <span class="badge badge-info">0</span></a></li>
+                  <li><a href="#"><i class="icon-globe"></i> Topology</a></li>
+                  <li class="divider"></li>
+                  <li><a href="@routes.ConnectController.disconnect()"><i class="icon-off"></i> Disconnect</a></li>
+			  } else {
+                  <li class="divider"></li>
+                  <li><a href="@routes.NodesController.index()"><i class="icon-off"></i> Connect</a></li>
+			  }
+            </ul>
+          </div><!--/.well -->
+        </div><!--/span-->
+
+        <!-- Content -->
+        <div class="span9">    
+
+		@if(flash.get("success")){
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert">×</button>
+			<strong>@flash.get("success")</strong>
+		</div>
+		} else {
+            @if(flash.get("error")){
+            <div class="alert alert-error">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>@flash().get("error")</strong>
+            </div>
+		    } else {
+                @if(flash.get("info")){
+                    <div class="alert alert-info">
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        <strong>@flash().get("info")</strong>
+                    </div>
+                }
+            }
+        }
+
+        @content
+    
+  	    </div>
+    </div>
+        </div>
+  	
+    <script src="@routes.Assets.at("assets/js/jquery.js")"></script>
+	<script src="@routes.Assets.at("assets/js/bootstrap-transition.js")"></script>
+	<script src="@routes.Assets.at("assets/js/bootstrap-alert.js")"></script>
+	<script src="@routes.Assets.at("assets/js/bootstrap-modal.js")"></script>
+	<script src="@routes.Assets.at("assets/js/bootstrap-dropdown.js")"></script>
+	<script src="@routes.Assets.at("assets/js/bootstrap-scrollspy.js")"></script>
+	<script src="@routes.Assets.at("assets/js/bootstrap-tab.js")"></script>
+	<script src="@routes.Assets.at("assets/js/bootstrap-tooltip.js")"></script>
+	<script src="@routes.Assets.at("assets/js/bootstrap-popover.js")"></script>
+	<script src="@routes.Assets.at("assets/js/bootstrap-button.js")"></script>
+	<script src="@routes.Assets.at("assets/js/bootstrap-collapse.js")"></script>
+	<script src="@routes.Assets.at("assets/js/bootstrap-carousel.js")"></script>
+	<script src="@routes.Assets.at("assets/js/bootstrap-typeahead.js")"></script>
+	<script src="@routes.Assets.at("assets/gritter/js/jquery.gritter.js")"></script>
+	<script src="@routes.Assets.at("assets/petals/js/application.js")"></script>
+
+    @moreScripts
+
+	<script>
+	   $.extend($.gritter.options, {
+	     position: 'bottom-right'
+	   });
+	</script>
+
+    <!-- Websocket -->
+    <script>
+        var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
+        var ws = new WS("@routes.Websocket.messageSocket().webSocketURL(request)");
+        ws.onmessage = function(message) {
+            var json = $.parseJSON(message.data);
+
+            if (json.type == 'alert') {
+                $.petals.newAlert(params);
+
+            } else if (json.type == 'message') {
+                $.petals.newEvent(json);
+
+                var unique_id = $.gritter.add({
+                    title: json.title,
+                    text: json.content,
+                    sticky: false,
+                    time: '2000'
+                });
+
+            } else {
+                console.log('Unsupported message type from websocket', json);
+            }
+        }
+
+		ws.onclose = function(evt) {
+			var unique_id = $.gritter.add({
+			    title: 'Websocket status',
+			    text: 'Closed!',
+			    sticky: false,
+			    time: '1000'
+			  });
+		};
+    </script>
+  </body>
+</html>

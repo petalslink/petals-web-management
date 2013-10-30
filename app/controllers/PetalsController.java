@@ -21,9 +21,8 @@ package controllers;
 
 import models.Node;
 import play.Logger;
-import play.mvc.Before;
 import play.mvc.Controller;
-import play.mvc.Scope.Session;
+import play.mvc.Http;
 import utils.Constants;
 
 /**
@@ -32,33 +31,22 @@ import utils.Constants;
  */
 public class PetalsController extends Controller {
 
-	@Before()
-	private static void currentNode() {
-		Logger.debug("Getting current node");
-		String currentNode = session.get(Constants.SESSION_CURRENT_NODE);
-		if (currentNode != null) {
-			// TODO : Get from cache if available...
-
-			renderArgs.put(Constants.SESSION_CURRENT_NODE,
-					Node.findById(Long.parseLong(currentNode)));
-			Logger.debug("Got it!");
-		} else {
-			Logger.debug("Can not get node from session");
-		}
-	}
-
+    /**
+     * Get the current node from the session or redirect to the node selection page
+     * @return
+     */
 	public static Node getCurrentNode() {
 		Long node = getCurrentNodeId();
 		if (node == null) {
-			flash.error("Please select a node");
-			NodesController.index();
+			flash("error", "Not connected, please select a node");
+            // TODO : Redirect to the /nodes page
+			//redirect("/nodes");
 		}
 		return Node.findById(getCurrentNodeId());
 	}
 
 	protected static Long getCurrentNodeId() {
-		return (Session.current().get(Constants.SESSION_CURRENT_NODE) == null) ? null
-				: Long.parseLong(Session.current().get(
-						Constants.SESSION_CURRENT_NODE));
+		return (session(Constants.SESSION_CURRENT_NODE) == null) ? null
+				: Long.parseLong(session(Constants.SESSION_CURRENT_NODE));
 	}
 }

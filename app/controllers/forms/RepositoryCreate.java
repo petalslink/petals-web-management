@@ -1,7 +1,7 @@
 /**
  *
  * Copyright (c) 2013, Linagora
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -17,23 +17,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-
-import controllers.WebSocket;
-import models.Message;
-import play.jobs.Every;
-import play.jobs.Job;
+package controllers.forms;
 
 /**
- * @author chamerling
- *
+ * @author Christophe Hamerling - chamerling@linagora.com
  */
-@Every("3000s")
-public class BackgroundJob extends Job {
+public class RepositoryCreate {
 
-	public void doJob() throws Exception {
-		Message message = new Message();
-		message.title = "Ping";
-		message.content = "...";
-		WebSocket.liveStream.publish(message);
-	}
+    @play.data.validation.Constraints.Required
+    public String name;
+
+    @play.data.validation.Constraints.Required
+    public String url;
+
+    @play.data.validation.Constraints.Required
+    public String version;
+
 }

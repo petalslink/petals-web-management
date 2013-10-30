@@ -19,9 +19,10 @@
  */
 package models;
 
-import play.db.jpa.Model;
+import play.db.ebean.Model;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * @author chamerling
@@ -30,6 +31,9 @@ import javax.persistence.Entity;
 @Entity
 public class Node extends Model {
 
+    @Id
+    public Long id;
+
 	public String host;
 
 	public int port;
@@ -37,6 +41,18 @@ public class Node extends Model {
 	public String login;
 
 	public String password;
+
+    public static Finder<String,Node> find = new Finder<String,Node>(
+            String.class, Node.class
+    );
+
+    public static Node findById(Long id) {
+        return find.byId("" + id);
+    }
+
+    public Long getId() {
+        return id;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -48,6 +64,7 @@ public class Node extends Model {
 
         if (port != node.port) return false;
         if (host != null ? !host.equals(node.host) : node.host != null) return false;
+        if (id != null ? !id.equals(node.id) : node.id != null) return false;
         if (login != null ? !login.equals(node.login) : node.login != null) return false;
         if (password != null ? !password.equals(node.password) : node.password != null) return false;
 
@@ -57,10 +74,22 @@ public class Node extends Model {
     @Override
     public int hashCode() {
         int result = super.hashCode();
+        result = 31 * result + (id != null ? id.hashCode() : 0);
         result = 31 * result + (host != null ? host.hashCode() : 0);
         result = 31 * result + port;
         result = 31 * result + (login != null ? login.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "id=" + id +
+                ", host='" + host + '\'' +
+                ", port=" + port +
+                ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

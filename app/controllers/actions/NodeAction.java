@@ -17,33 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package monitoring;
+package controllers.actions;
 
-import controllers.AlertWebSocket;
-import controllers.actors.WebSocket;
-import models.Alert;
 import play.Logger;
-import utils.ApplicationEvent;
+import play.mvc.Action;
+import play.mvc.Http;
+import play.mvc.Result;
+import utils.Constants;
 
 /**
- * Local alert receiver. Used to centralize all the stuff to do when an alert is received.
- *
  * @author Christophe Hamerling - chamerling@linagora.com
  */
-public class DefaultAlertListener implements AlertListener {
+public class NodeAction extends Action<PetalsNodeSelected> {
 
     @Override
-    public void handle(Alert alert) {
-        Logger.debug("Handle alert");
-        if (alert == null) {
-            return;
+    public Result call(Http.Context context) throws Throwable {
+
+        // Do not check not selection stuff
+        if (configuration.exclude()) {
+            Logger.debug("Exclude connect checking");
+            return delegate.call(context);
         }
 
-        try {
-            alert.save();
-        } catch (Exception e) {
+        if (context.session().get(Constants.SESSION_CURRENT_NODE) == null) {
+            Logger.debug("Not connected, redirect to /nodes");
+            context.flash().put("error", "You are not connected to any Petals node, please select one");
+            return redirect("/nodes");
+        } else {
+            Logger.debug("Connected to node " + context.session().get(Constants.SESSION_CURRENT_NODE));
+            return delegate.call(context);
         }
-        ApplicationEvent.info("New alert has been received : %s", alert.message);
-        WebSocket.alert(alert);
     }
 }

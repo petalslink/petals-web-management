@@ -1,0 +1,94 @@
+@(component: org.ow2.petals.admin.api.artifact.Component, properties: Set[models.Property], subscriptions : List[models.Subscription])
+
+@main("Component") {
+
+    <ul class="breadcrumb">
+      <li><a href="@routes.Application.index()">Home</a> <span class="divider">/</span></li>
+      <li><a href="@routes.ArtifactsController.index()">Artifacts</a> <span class="divider">/</span></li>
+      <li><a href="@routes.ArtifactsController.index()#components">Components</a> <span class="divider">/</span></li>
+      <li class="active">@component.getName</li>
+    </ul>
+
+    <div class="alert alert-info alert-block">
+        <h4>Status</h4>
+        <b>@component.getName</b> is currently <span class="label label-info">@component.getState.toString()</span>
+    </div>
+
+    <div class="well">
+        <div class="btn-group">
+          <a class="btn dropdown-toggle btn-danger" data-toggle="dropdown" href="#">
+            Manage
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="@routes.ArtifactsController.doStopAndUndeployArtifact(component.getName, "component")">Stop and Undeploy</a></li>
+        </ul>
+        </div>
+        <div class="btn-group">
+            <a class="btn dropdown-toggle btn-info" data-toggle="dropdown" href="#">
+                Monitoring
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="@routes.MonitoringController.subscribe(component.getName, component.getType)">Subscribe</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="properties">
+    @if(properties != null) {
+        <h4>Properties</h4>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+                @for(property <- properties) {
+                <tr>
+                    <td align="left"><b>@property.name</b></td>
+                    <td>@property.value</td>
+                    <td>
+                        <a href="#" class="btn btn-danger disabled">Edit</a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+    </div>
+
+    <hr>
+
+    <div id="subscriptions">
+    @if(subscriptions != null) {
+        <h4>Subscriptions</h4>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>State</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+                @for(subscription <- subscriptions) {
+                <tr>
+                    <td align="left"><b>@subscription.id</b></td>
+                    <td>@subscription.date</td>
+                    <td>@subscription.status</td>
+                    <td>
+                        <a href="#" class="btn btn-danger disabled">Unsubscribe</a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+    </div>
+}
+

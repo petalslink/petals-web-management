@@ -21,6 +21,7 @@ package controllers.events;
 
 import com.google.common.eventbus.Subscribe;
 import controllers.AlertWebSocket;
+import controllers.actors.WebSocket;
 import models.Alert;
 
 /**
@@ -33,7 +34,7 @@ public class AlertEventListener {
     @Subscribe
     public void alert(Alert alert) {
         if (alert != null) {
-            AlertWebSocket.alertStream.publish(alert);
+            WebSocket.alert(alert);
         }
     }
 }

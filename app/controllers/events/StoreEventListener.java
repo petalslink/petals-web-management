@@ -41,7 +41,7 @@ public class StoreEventListener {
 		if (event == null) {
 			return;
 		}
-		Logger.debug("New event to store %s", event.message);
+		Logger.debug(String.format("New event to store %s", event.message));
 		event.save();
 	}
 }

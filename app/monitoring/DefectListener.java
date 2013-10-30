@@ -22,7 +22,6 @@ package monitoring;
 import models.Alert;
 import org.ow2.petals.jmx.api.api.monitoring.Defect;
 import play.Logger;
-import play.jobs.Job;
 
 import java.util.Date;
 
@@ -49,26 +48,20 @@ public class DefectListener implements org.ow2.petals.jmx.api.api.monitoring.Def
 
     @Override
     public void onDefect(final Defect defect) {
-        Logger.debug("Got a defect from component %s!", component);
-
-        // Need to create a play JOB to run in the right thread
-        // ie JMX listeners runs in their own threads
-        Job job = new Job() {
-            @Override
-            public void doJob() throws Exception {
-                Alert a = new Alert();
-                a.message = defect.getMessage();
-                a.source = defect.getEmitter();
-                a.type = defect.getType();
-                a.receivedAt = new Date();
-                a.sequenceNb = defect.getSequenceNumber();
-                a.read = false;
-                // TODO : Handle user data... defect.getUserData()
-                if (listener != null) {
-                    listener.handle(a);
-                }
+        Logger.debug("Got a defect from component " + component);
+        Alert a = new Alert();
+        a.message = defect.getMessage();
+        a.source = defect.getEmitter();
+        a.type = defect.getType();
+        a.receivedAt = new Date();
+        a.sequenceNb = defect.getSequenceNumber();
+        a.read = false;
+        if(listener != null) {
+            try {
+                listener.handle(a);
+            } catch (MonitoringException e) {
+                e.printStackTrace();
             }
-        };
-        job.now();
+        }
     }
 }

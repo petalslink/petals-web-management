@@ -1,7 +1,7 @@
 /**
  *
  * Copyright (c) 2013, Linagora
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -17,33 +17,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package controllers;
+package controllers.actions;
 
-import java.util.List;
+import play.mvc.With;
 
-import controllers.actions.PetalsNodeSelected;
-import models.BaseEvent;
-import play.mvc.Result;
-import views.html.Application.*;
-
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * @author chamerling
+ * Use this annotation on controllers and routes where a node MUST be selected.
+ * If not connected to a node, it will redirect to the node selection page.
+ *
+ * @author Christophe Hamerling - chamerling@linagora.com
  */
-@PetalsNodeSelected
-public class Application extends PetalsController {
-	
-	public static Result index() {
-		List<BaseEvent> events = BaseEvent.pasts();
-		return ok(index.render(events));
-	}
+@With(NodeAction.class)
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface PetalsNodeSelected {
 
-    /**
-     * Clear all the events from the index page
-     */
-    public static Result clearEvents() {
-        BaseEvent.deleteAll();
-        return index();
-    }
-
+    boolean exclude() default false;
 }

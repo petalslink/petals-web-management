@@ -19,9 +19,11 @@
  */
 package models;
 
-import play.db.jpa.Model;
+import com.google.common.collect.Lists;
+import play.db.ebean.Model;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.PostPersist;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -34,12 +36,19 @@ import java.util.List;
 @Entity
 public class BaseEvent extends Model {
 
+    @Id
+    public Long id;
+
 	public Date date;
 
     @Size(max=1024)
 	public String message;
 
 	public String type;
+
+    public String getType() {
+        return type;
+    }
 
     /**
      * Emit the event to the client?
@@ -53,13 +62,20 @@ public class BaseEvent extends Model {
 	}
 
 	public static List<BaseEvent> pasts() {
-		return BaseEvent.find("date < ? order by date desc", new Date())
-				.fetch();
+		return find.all();
 	}
 
 	public static BaseEvent event(String type, String pattern, Object... params) {
 		return new BaseEvent(String.format(pattern, params), type);
 	}
+
+    public static Finder<String,BaseEvent> find = new Finder<String,BaseEvent>(
+            String.class, BaseEvent.class
+    );
+
+    public static void deleteAll() {
+        // TODO
+    }
 
     /**
      * Post registration callback. Notifies the user about a new event
