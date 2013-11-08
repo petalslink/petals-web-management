@@ -24,3 +24,4 @@ logs/
 *.iml
 *.ipr
 *.iws
+.checkstyle
