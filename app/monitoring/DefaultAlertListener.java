@@ -19,7 +19,6 @@
  */
 package monitoring;
 
-import controllers.AlertWebSocket;
 import controllers.actors.WebSocket;
 import models.Alert;
 import play.Logger;

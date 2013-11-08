@@ -20,7 +20,6 @@
 package controllers.events;
 
 import com.google.common.eventbus.Subscribe;
-import controllers.AlertWebSocket;
 import controllers.actors.WebSocket;
 import models.Alert;
 
