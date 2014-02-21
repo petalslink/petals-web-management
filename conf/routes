@@ -29,8 +29,6 @@ GET         /artifacts/sas/:name                             controllers.Artifac
 GET         /artifacts/delete/locals                         controllers.ArtifactsController.deleteLocalArtifacts()
 
 GET         /endpoints                                       controllers.EndpointsController.index()
-GET         /endpoints/sync                                  controllers.EndpointsController.synchronize()
-GET         /endpoints/syncall                               controllers.EndpointsController.synchronizeAll()
 
 # Monitoring
 

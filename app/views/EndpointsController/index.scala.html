@@ -25,12 +25,6 @@
       <li class="active">Endpoints</li>
     </ul>
 
-    <div class="well">
-        <a href="@routes.EndpointsController.synchronizeAll" class="btn">Synchronize All</a>
-        &nbsp;
-        <a href="@routes.EndpointsController.synchronize" class="btn">Synchronize Current</a>
-    </div>
-
     @if(endpoints != null) {
     <table class="table table-striped">
            <thead>
@@ -45,7 +39,7 @@
            @for(endpoint <- endpoints) {
              <tr>
                 <td align="left"><a href="#">@endpoint.getEndpointName</a></td>
-               <td></td>
+               <td>@endpoint.getServiceName()</td>
                <td></td>
                <td>
                 <a href="#" class="btn">Details</a>

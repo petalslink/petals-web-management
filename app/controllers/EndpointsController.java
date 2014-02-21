@@ -17,18 +17,16 @@
  */
 package controllers;
 
-import controllers.actions.PetalsNodeSelected;
+import java.util.List;
+
 import org.ow2.petals.admin.api.RegistryAdministration;
 import org.ow2.petals.admin.registry.Endpoint;
 import org.ow2.petals.admin.registry.RegistryView;
-import play.Logger;
+
 import play.mvc.Result;
-import utils.ApplicationEvent;
 import utils.PetalsAdmin;
-
-import java.util.List;
-
-import views.html.EndpointsController.*;
+import views.html.EndpointsController.index;
+import controllers.actions.PetalsNodeSelected;
 
 
 /**
@@ -49,45 +47,6 @@ public class EndpointsController extends PetalsController {
             flash("error", String.format("Can not get registry client : %s", e.getMessage()));
             return ok(index.render(null));
         }
-    }
-
-    public static Result synchronizeAll() {
-        try {
-            final RegistryAdministration registry = PetalsAdmin
-                    .getRegistryAdministration(getCurrentNode());
-            // TODO : Async
-            try {
-                registry.synchronizeRegistryOnAllNodes();
-                ApplicationEvent.info("All registries have been synchronized");
-            } catch (Exception e) {
-                Logger.error("All Registries sync error", e);
-                ApplicationEvent.warning("All Registries sync error : %s", e.getMessage());
-            }
-        } catch (Exception e) {
-            Logger.error("All Registries sync error", e);
-            flash("error", String.format("Unable to call synchronize '%s'", e.getMessage()));
-        }
-        flash("info", "Registry sync has been launched in the background...");
-        return redirect(routes.EndpointsController.index());
-    }
-
-    public static Result synchronize() {
-        try {
-            final RegistryAdministration registry = PetalsAdmin
-                    .getRegistryAdministration(getCurrentNode());
-            // TODO : Async
-            try {
-                registry.synchronizeRegistry();
-                ApplicationEvent.info("Registry Synchronized");
-            } catch (Exception e) {
-                ApplicationEvent.warning("Registry sync error : %s", e.getMessage());
-                }
-        } catch (Exception e) {
-            Logger.error("Syn error", e);
-            flash("error", String.format("Unable to call synchronize '%s'", e.getMessage()));
-        }
-        flash("info", "Registry sync has been launched in the background...");
-        return index();
     }
 
     public static Result endpoint(String name) {

@@ -25,3 +25,5 @@ logs/
 *.ipr
 *.iws
 .checkstyle
+/bin
+/.target
