@@ -40,7 +40,7 @@ public class EndpointsController extends PetalsController {
         try {
             RegistryAdministration registry = PetalsAdmin
                     .getRegistryAdministration(getCurrentNode());
-            RegistryView view = registry.getRegistryContent(".*", ".*", ".*");
+            RegistryView view = registry.getRegistryContent(".*", ".*", ".*", ".*");
             List<Endpoint> endpoints = view.getAllEndpoints();
             return ok(index.render(endpoints));
         } catch (Exception e) {
