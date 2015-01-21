@@ -179,7 +179,7 @@ public class ArtifactsController extends PetalsController {
             // TODO : Async
             try {
                 PetalsAdmin.getArtifactAdministration(node)
-                        .stopAndUndeployArtifact(type, name);
+                        .stopAndUndeployArtifact(type, name, null);
                 ApplicationEvent.info("Artifact '%s' stopped and undeployed", name);
             } catch (Exception e) {
                 Logger.error(String.format("Error while undeploying artifact %s"), e);
@@ -195,7 +195,7 @@ public class ArtifactsController extends PetalsController {
     public static Result component(String name, String tyype) {
         try {
             Artifact artifact = PetalsAdmin.getArtifactAdministration(
-                    getCurrentNode()).getArtifactInfo(tyype, name);
+                    getCurrentNode()).getArtifactInfo(tyype, name, null);
 
             if (artifact != null) {
                 final Component c = (Component) artifact;
@@ -232,7 +232,7 @@ public class ArtifactsController extends PetalsController {
     public static Result sa(String name) {
         try {
             Artifact artifact = PetalsAdmin.getArtifactAdministration(
-                    getCurrentNode()).getArtifactInfo("SA", name);
+                    getCurrentNode()).getArtifactInfo("SA", name, null);
 
             if (artifact != null) {
                 final ServiceAssembly serviceAssembly = (ServiceAssembly) artifact;
@@ -252,7 +252,7 @@ public class ArtifactsController extends PetalsController {
     public static Result sl(String name) {
         try {
             Artifact artifact = PetalsAdmin.getArtifactAdministration(
-                    getCurrentNode()).getArtifactInfo("SL", name);
+                    getCurrentNode()).getArtifactInfo("SL", name, null);
 
             if (artifact != null) {
                 final SharedLibrary sharedLibrary = (SharedLibrary) artifact;
