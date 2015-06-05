@@ -150,7 +150,7 @@ public class ArtifactsController extends PetalsController {
 
             try {
                 PetalsAdmin.getArtifactAdministration(node)
-                            .deployAndStartArtifact(new URL(form.get().url));
+                            .deployAndStartArtifact(new URL(form.get().url), false);
                 ApplicationEvent.info("Artifact deployed and started from %s", form.get().url);
             } catch (Exception e) {
                 Logger.error(String.format("Error while deploying artifact %s", form.get().url), e);
@@ -296,7 +296,7 @@ public class ArtifactsController extends PetalsController {
             try {
                 PetalsAdmin.getArtifactAdministration(node)
                         .deployAndStartArtifact(
-                                new URL(getArtifactURL(artifact)));
+                                new URL(getArtifactURL(artifact)), false);
 
                 ApplicationEvent.info("Artifact %s deployed and started", artifact.name);
             } catch (Exception e) {
